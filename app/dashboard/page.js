@@ -1,158 +1,236 @@
 "use client";
 import { useEffect, useState } from "react";
 import { supabase } from "@/libs/supabaseClient";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import DashboardHeader from "@/components/Profile/DashboardHeader";
+import UserInfoCard from "@/components/Profile/UserInfoCard";
+import CompanionProfileCard from "@/components/Profile/CompanionProfileCard";
+import QuickActions from "@/components/Profile/QuickActions";
 import CompanionProfileForm from "@/components/CompanionProfileForm";
+import LoadingState from "@/components/Profile/LoadingState";
+import ErrorState from "@/components/Profile/ErrorState";
+import Link from "next/link";
 
 export default function Dashboard() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const roleFromQuery = searchParams.get("role");
-
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [companionProfile, setCompanionProfile] = useState(null);
   const [profileComplete, setProfileComplete] = useState(false);
 
-  useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session?.user) setUser(session.user);
-      setLoading(false);
-    };
+useEffect(() => {
+  let mounted = true;
+  const initializeDashboard = async () => {
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (!mounted) return;
 
-    getUser();
-
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "SIGNED_IN" && session?.user) {
-          setUser(session.user);
-        }
-      }
-    );
-
-    return () => listener.subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const fetchOrCreateProfile = async () => {
-      if (!user) return;
-
-      let role = roleFromQuery;
-      if (!role || !["admin", "traveller", "companion"].includes(role)) {
-        role = "traveller";
-      }
-
-      const {  data: userData, error  } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Error fetching profile:", error);
+      if (sessionError) {
+        console.error("Session error:", sessionError);
+        setLoading(false);
         return;
       }
-      if (!userData) {
-        const { data: newUser, error: insertError } = await supabase
-          .from("users")
-          .insert({
-            id: user.id,
-            email: user.email,
-            role,
-            full_name: "",
-          })
-          .select()
-          .single();
 
-        if (insertError) console.error("Error inserting user:", insertError);
-        else setProfile(newUser);
-      } else {
-        setProfile(userData);
+      if (!session?.user) {
+        setLoading(false);
+        return;
       }
-      if (role === "companion") {
-        const { data: companionData, error: companionError } = await supabase
-          .from("companions")
-          .select("*")
-          .eq("user_id", user.id)
-          .maybeSingle();
 
-        if (companionError) console.error("Error fetching companion profile:", companionError);
+      setUser(session.user);
+      const { data: userData, error: profileError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", session.user.id)
+        .maybeSingle();
+
+      if (!mounted) return;
+
+      if (profileError) {
+        console.error("Error fetching profile:", profileError);
+        setLoading(false);
+        return;
+      }
+      if (userData) {
+        setProfile(userData);
         
-        if (companionData) {
-          setCompanionProfile(companionData);
-          setProfileComplete(true);
+        if (userData.role === "companion") {
+          const { data: companionData } = await supabase
+            .from("companions")
+            .select("*")
+            .eq("user_id", session.user.id)
+            .maybeSingle();
+
+          if (!mounted) return;
+
+          if (companionData) {
+            setCompanionProfile(companionData);
+            setProfileComplete(true);
+          } else {
+            setProfileComplete(false);
+          }
+        }
+        setLoading(false);
+        return;
+      }
+
+      let role = roleFromQuery;
+      
+      if (!role || !["admin", "traveller", "companion"].includes(role)) {
+        console.log("No valid role provided in URL. User must login via magic link.");
+        setLoading(false);
+        await supabase.auth.signOut();
+        router.push('/auth/login?error=invalid_access');
+        return;
+      }
+      const { data: newUser, error: insertError } = await supabase
+        .from("users")
+        .insert({
+          id: session.user.id,
+          email: session.user.email,
+          role,
+          full_name: "",
+        })
+        .select()
+        .single();
+
+      if (!mounted) return;
+
+      if (insertError) {
+        console.error("Error inserting user:", insertError);
+      } else {
+        setProfile(newUser);
+        if (role === "companion") {
+          setProfileComplete(false);
         }
       }
+
       setLoading(false);
-    };
+    } catch (error) {
+      if (!mounted) return;
+      console.error("Initialization error:", error);
+      setLoading(false);
+    }
+  };
 
-    fetchOrCreateProfile();
-  }, [user, roleFromQuery]);
+  initializeDashboard();
 
-    const handleProfileComplete = (companionData) => {
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    (event, session) => {
+      if (!mounted) return;
+      
+      if (event === "SIGNED_IN" && session?.user) {
+        setUser(session.user);
+        // Re-initialize dashboard on sign in
+        initializeDashboard();
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+        setProfile(null);
+        setLoading(false);
+      }
+    }
+  );
+
+  return () => {
+    mounted = false;
+    subscription.unsubscribe();
+  };
+}, [roleFromQuery, router]);
+
+  const handleProfileComplete = (companionData) => {
     setCompanionProfile(companionData);
     setProfileComplete(true);
   };
 
 
-  if (loading) return <p>Loading...</p>;
-  if (!user || !profile) return <p>Error loading profile</p>;
-
-  if (profile.role === "companion" && !profileComplete) {
-    return <CompanionProfileForm userId={user.id} onComplete={handleProfileComplete} />;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <LoadingState />
+          {/* <p className="mt-4 text-gray-600">Loading your dashboard...</p> */}
+        </div>
+      </div>
+    );
+  }
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <ErrorState />
+          <p className="mt-4 text-gray-600">Please log in to access your dashboard</p>
+          <button 
+            onClick={() => router.push('/auth/login')}
+            className="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <LoadingState />
+          <p className="mt-4 text-gray-600">Setting up your profile...</p>
+        </div>
+      </div>
+    );
   }
 
- return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* User Info Card */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">User Information</h2>
-          <div className="space-y-2">
-            <p><strong>Email:</strong> {profile.email}</p>
-            <p><strong>Full Name:</strong> {profile.full_name || "-"}</p>
-            <p><strong>Role:</strong> 
-              <span className={`ml-2 px-2 py-1 rounded text-sm ${
-                profile.role === 'admin' ? 'bg-red-100 text-red-800' :
-                profile.role === 'companion' ? 'bg-blue-100 text-blue-800' :
-                'bg-green-100 text-green-800'
-              }`}>
-                {profile.role}
-              </span>
-            </p>
-            <p><strong>User ID:</strong> {profile.id}</p>
+  if (profile.role === "companion" && !profileComplete) {
+    return (
+      <CompanionProfileForm
+        userId={user.id}
+        onComplete={handleProfileComplete}
+      />
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        {/* <DashboardHeader profile={profile} /> */}
+
+        <div className="space-y-6">
+          <div className="space-y-6">
+            {/* <div className="flex justify-end items-center gap-1">
+              {profile?.role === "traveller" && (
+                <Link
+                  href={"/dashboard/Booked-Flights"}
+                  className="text-sm font-medium bg-red-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition"
+                >
+                  Booked Flights
+                </Link>
+              )}
+
+              <Link
+                href={"/dashboard/FlightChecker"}
+                className="text-sm font-medium bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition"
+              >
+                Flight Checker
+              </Link>
+            </div> */}
+            <UserInfoCard profile={profile} />
+
+            {profile.role === "companion" && companionProfile && (
+              <CompanionProfileCard companionProfile={companionProfile} />
+            )}
           </div>
-        </div>
-
-        {/* Companion Profile Card */}
-        {profile.role === "companion" && companionProfile && (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Companion Profile</h2>
-            <div className="space-y-2">
-              <p><strong>Phone:</strong> {companionProfile.phone}</p>
-              <p><strong>Passport:</strong> {companionProfile.passport_number}</p>
-              <p><strong>Seat Preference:</strong> {companionProfile.seat_preference}</p>
-              <p><strong>Meal Preference:</strong> {companionProfile.meal_preference}</p>
-
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Navigation based on role */}
-      <div className="mt-8">
-        <div className="flex gap-4">
-          <button 
-            onClick={() => supabase.auth.signOut()}
-            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-          >
-            Sign Out
-          </button>
+{/* 
+          <QuickActions
+            onSignOut={async () => {
+              await supabase.auth.signOut();
+              router.push("/auth/login");
+            }}
+            onAdminRedirect={handleDashboardRedirect}
+            profile={profile}
+          /> */}
         </div>
       </div>
     </div>

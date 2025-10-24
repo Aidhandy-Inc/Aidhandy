@@ -1,10 +1,12 @@
 'use client'
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/libs/supabaseClient';
+import { useRouter } from 'next/navigation';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -28,6 +30,7 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    router.push("/auth/login");
     setUser(null);
   };
 

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { fetchAmadeusToken } from "@/libs/amadeusToken";
 import { supabase } from "@/libs/supabaseClient";
@@ -11,6 +11,8 @@ import BookedFlightInfo from "@/components/Flight/BookedFlightInfo";
 import DuffelFlightList from "@/components/Flight/DuffelFlightList";
 import SeatMapModalDuffel from "@/components/Seat/SeatMapModalDuffel";
 import { getUserRole } from "@/utils/getUserRole";
+import BackButton from "@/components/common/BackButton";
+import LoadingState from "@/components/Profile/LoadingState";
 
 export default function FlightChecker() {
   const { user, loading } = useAuth();
@@ -25,6 +27,7 @@ export default function FlightChecker() {
   const [userFlight, setUserFlight] = useState(null);
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const flightsPerPage = 10;
@@ -38,6 +41,14 @@ export default function FlightChecker() {
   const [selectedCompanion, setSelectedCompanion] = useState(null);
   const [pairingId, setPairingId] = useState(null);
 
+ useEffect(() => {
+  const fetchUserRole = async () => {
+    const userRole = await getUserRole(user.id);
+    console.log(userRole);
+    setUserRole(userRole);
+  };
+  fetchUserRole();
+}, [user]);
   // ! Flight Search Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -130,8 +141,7 @@ export default function FlightChecker() {
     // }
     setSubmitting(false);
   };
-
-  // ! Flight Selection Handler
+  // ! Flight Selection Handler And Seatmap + Companion Search
   const handleSelectFlight = async (flight) => {
     if (!user) return alert("Please login first");
     setSelectedFlight(flight);
@@ -259,172 +269,127 @@ export default function FlightChecker() {
   const handleSeatSelect = (seat) => {
     setSelectedSeat(seat);
   };
+  // ! Show Modal After Companion Selection And Seat Confirmation
   const handleCompanionSelect = async (companion) => {
-  setSelectedCompanion(companion);
-  
-  // Get user role to prevent companions from pairing with companions
-  const userRole = await getUserRole(user.id);
-  
-  // Prevent companions from booking other companions
-  if (userRole === "companion") {
-    alert("Companions cannot book other companions. You are already a helper!");
-    setSelectedCompanion(null);
-    return;
-  }
-  
-  alert(`✅ Selected ${companion.full_name}! Now select an adjacent seat to complete pairing.`);
-};
-const handleConfirmSeat = async () => {  // ✅ Make it async
-  if (!selectedSeat) {
-    alert("Please select a seat first");
-    return;
-  }
+    setSelectedCompanion(companion);
 
-  try {
-    // If companion is selected, CREATE PAIRING HERE
-    if (selectedCompanion) {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const supabaseToken = session?.access_token;
-
-      // Prepare pairing data
-      const firstSlice = selectedFlight.slices?.[0];
-      const firstSegment = firstSlice?.segments?.[0];
-
-      if (!firstSegment) {
-        alert("Cannot create pairing: Invalid flight data");
-        return;
-      }
-
-      const pairingData = {
-        traveler_id: user.id,
-        companion_id: selectedCompanion.id,
-        airline_name: selectedFlight.owner?.iata_code || "Unknown",
-        flight_number:
-          firstSegment.marketing_carrier_flight_number || 
-          firstSegment.number ||
-          "Unknown",
-        flight_date:
-          firstSegment.departing_at?.split("T")[0] ||
-          flightData.preferred_date,
-        seat_number: selectedSeat?.name || "TBD",
-        status: "pending_payment",
-      };
-
-      // Create pairing
-      const res = await fetch("/api/pairings-duffel", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${supabaseToken}`,
-        },
-        body: JSON.stringify(pairingData),
-      });
-
-      const pairingResult = await res.json();
-
-      if (res.ok) {
-        setPairingId(pairingResult.id);
-        alert(`✅ Paired with ${selectedCompanion.full_name}! Proceed to payment.`);
-      } else {
-        alert(`Pairing failed: ${pairingResult.error}`);
-        return; // Don't proceed if pairing fails
-      }
+    const userRole = await getUserRole(user.id);
+    if (userRole === "companion") {
+      alert(
+        "Companions cannot book other companions. You are already a helper!"
+      );
+      setSelectedCompanion(null);
+      return;
     }
+    alert(
+      `✅ Selected ${companion.full_name}! Now select an adjacent seat to complete pairing.`
+    );
+  };
+  // ! Confirm Seat And Create Pairing If Companion Selected
+  const handleConfirmSeat = async () => {
+    if (!selectedSeat) {
+      alert("Please select a seat first");
+      return;
+    }
+    try {
+      if (selectedCompanion) {
+        console.log("Selected Companion ID:", selectedCompanion.id);
 
-    // Show modal after pairing is created (or if no companion selected)
-    setShowSeatmap(false);
-    setShowModal(true);
-    
-  } catch (error) {
-    console.error("Pairing error:", error);
-    alert("Error creating pairing.");
-  }
-};
-  // const handleCompanionSelect = async (companion) => {
-  //   setSelectedCompanion(companion);
+        // Try different search approaches to find the companion
+        let companionRecord = null;
 
-  //   // Create pairing immediately when companion is selected
-  //   try {
-  //     const {
-  //       data: { session },
-  //     } = await supabase.auth.getSession();
-  //     const supabaseToken = session?.access_token;
+        // First try: Search by user_id (most likely)
+        const { data: companionByUserId, error: error1 } = await supabase
+          .from("companions")
+          .select("id, user_id, full_name")
+          .eq("user_id", selectedCompanion.id)
+          .single();
 
-  //     // Get user role to prevent companions from pairing with companions
-  //     const userRole = await getUserRole(session.user.id);
+        if (companionByUserId) {
+          companionRecord = companionByUserId;
+          console.log("Found companion by user_id:", companionRecord);
+        } else {
+          // Second try: Search by id (if selectedCompanion.id is actually the companion id)
+          const { data: companionById, error: error2 } = await supabase
+            .from("companions")
+            .select("id, user_id, full_name")
+            .eq("id", selectedCompanion.id)
+            .single();
 
-  //     // Prevent companions from booking other companions
-  //     if (userRole === "companion") {
-  //       alert(
-  //         "Companions cannot book other companions. You are already a helper!"
-  //       );
-  //       setSelectedCompanion(null);
-  //       return;
-  //     }
+          if (companionById) {
+            companionRecord = companionById;
+            console.log("Found companion by id:", companionRecord);
+          } else {
+            // Third try: Show all companions to debug
+            const { data: allCompanions } = await supabase
+              .from("companions")
+              .select("id, user_id, full_name")
+              .limit(10);
 
-  //     // 🚨 FIX: Use slices instead of itineraries (Duffel structure)
-  //     const firstSlice = selectedFlight.slices?.[0];
-  //     const firstSegment = firstSlice?.segments?.[0];
+            console.log("All companions in database:", allCompanions);
+            console.log(
+              "Selected companion ID to search:",
+              selectedCompanion.id
+            );
+            alert("Companion not found. Check console for details.");
+            return;
+          }
+        }
 
-  //     if (!firstSegment) {
-  //       alert("Cannot create pairing: Invalid flight data");
-  //       return;
-  //     }
+        // Use the found companion's ID
+        const companionIdToUse = companionRecord.id;
 
-  //     const pairingData = {
-  //       traveler_id: user.id,
-  //       companion_id: companion.id,
-  //       airline_name: selectedFlight.owner?.iata_code || "Unknown",
-  //       flight_number:
-  //         firstSegment.marketing_carrier_flight_number || 
-  //         firstSegment.number ||
-  //         "Unknown",
-  //       flight_date:
-  //         firstSegment.departing_at?.split("T")[0] ||
-  //         flightData.preferred_date,
-  //       seat_number: selectedSeat?.name || "TBD",
-  //       status: "pending_payment",
-  //     };
+        const firstSlice = selectedFlight.slices?.[0];
+        const firstSegment = firstSlice?.segments?.[0];
 
-  //     const res = await fetch("/api/pairings-duffel", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${supabaseToken}`,
-  //       },
-  //       body: JSON.stringify(pairingData),
-  //     });
+        if (!firstSegment) {
+          alert("Cannot create pairing: Invalid flight data");
+          return;
+        }
 
-  //     const pairingResult = await res.json();
+        const pairingData = {
+          traveler_id: user.id,
+          companion_id: companionIdToUse,
+          airline_name: selectedFlight.owner?.iata_code || "Unknown",
+          flight_number:
+            firstSegment.marketing_carrier_flight_number ||
+            firstSegment.number ||
+            "Unknown",
+          flight_date:
+            firstSegment.departing_at?.split("T")[0] ||
+            flightData.preferred_date,
+          seat_number: selectedSeat?.name || "TBD",
+          status: "pending_payment",
+        };
 
-  //     if (res.ok) {
-  //       setPairingId(pairingResult.id);
-  //       alert(`✅ Paired with ${companion.full_name}! Proceed to payment.`);
-  //     } else {
-  //       alert(`Pairing failed: ${pairingResult.error}`);
-  //     }
-  //   } catch (error) {
-  //     console.error("Pairing error:", error);
-  //     alert("Error creating pairing.");
-  //   }
-  // };
-  // const handleConfirmSeat = () => {
-  //   if (!selectedSeat) {
-  //     alert("Please select a seat first");
-  //     return;
-  //   }
+        console.log("Final pairing data:", pairingData);
 
-  //   // If companion is selected, we already created pairing
-  //   if (selectedCompanion && pairingId) {
-  //     setShowSeatmap(false);
-  //     setShowModal(true);
-  //   } else {
-  //     setShowSeatmap(false);
-  //     setShowModal(true);
-  //   }
-  // };
+        const { data: pairingResult, error } = await supabase
+          .from("pairings")
+          .insert([pairingData])
+          .select()
+          .single();
+
+        if (error) {
+          console.error("Pairing error:", error);
+          alert(`Pairing failed: ${error.message}`);
+          return;
+        }
+
+        if (pairingResult) {
+          setPairingId(pairingResult.id);
+          alert(
+            `✅ Paired with ${selectedCompanion.full_name}! Proceed to payment.`
+          );
+        }
+      }
+      setShowSeatmap(false);
+      setShowModal(true);
+    } catch (error) {
+      console.error("Pairing error:", error);
+      alert("Error creating pairing.");
+    }
+  };
   const confirmBooking = async () => {
     if (!selectedFlight) return;
 
@@ -520,39 +485,51 @@ const handleConfirmSeat = async () => {  // ✅ Make it async
   };
 
   const handleClose = () => {
-  // Reset all states when closing modal
-  setShowSeatmap(false);
-  setSelectedSeat(null);
-  setSelectedCompanion(null);
-  setPairingId(null);
-  setCompanions([]);
-  setSeatmapData(null);
-};
-
-  if (loading) return <p>Checking session...</p>;
+    // Reset all states when closing modal
+    setShowSeatmap(false);
+    setSelectedSeat(null);
+    setSelectedCompanion(null);
+    setPairingId(null);
+    setCompanions([]);
+    setSeatmapData(null);
+  };
+  if (loading) return <LoadingState />;
   if (!user) return <p>You must be logged in to check flights.</p>;
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-6 text-center">Flight Checker</h1>
-      {!selectedPath && <PathSelector setSelectedPath={setSelectedPath} />}
-      {selectedPath === 1 && (
-        <BookedFlightInfo
-          userFlight={userFlight}
-          handleSubmit={handleSubmit}
-          submitting={submitting}
-        />
-      )}
-      {selectedPath === 2 && (
-        <RouteForm
-          flightData={flightData}
-          setFlightData={setFlightData}
-          handleSubmit={handleSubmit}
-          submitting={submitting}
-          setSelectedPath={setSelectedPath}
-        />
-      )}
-      {/* {response && response.length > 0 && (
+    <>
+      <BackButton text="Back" className="text-black" />
+      <div
+        className={`max-w-xl mx-auto  p-6 bg-white rounded  ${
+          !selectedPath
+            ? "h-screen flex flex-col justify-center"
+            : "shadow mt-10"
+        } ${
+          selectedPath === 1
+            ? " "
+            : "h-screen flex flex-col justify-center !shadow-none"
+        }`}
+      >
+        <h1 className="text-2xl font-bold mb-6 text-center">Flight Checker</h1>
+        {!selectedPath && <PathSelector setSelectedPath={setSelectedPath} />}
+        {selectedPath === 1 && (
+          <BookedFlightInfo
+            userFlight={userFlight}
+            handleSubmit={handleSubmit}
+            submitting={submitting}
+          />
+        )}
+        {selectedPath === 2 && (
+          <RouteForm
+            userRole={userRole}
+            flightData={flightData}
+            setFlightData={setFlightData}
+            handleSubmit={handleSubmit}
+            submitting={submitting}
+            setSelectedPath={setSelectedPath}
+          />
+        )}
+        {/* {response && response.length > 0 && (
         <FlightList
           response={response}
           currentPage={1}
@@ -561,34 +538,35 @@ const handleConfirmSeat = async () => {  // ✅ Make it async
           handleSelectFlight={handleSelectFlight}
         />
       )} */}
-      {response && response.offers && response.offers.length > 0 && (
-        <DuffelFlightList
-          offers={response}
-          handleSelectFlight={handleSelectFlight}
-        />
-      )}
-      <SeatMapModalDuffel
-        showSeatmap={showSeatmap}
-        setShowSeatmap={setShowSeatmap}
-        loadingSeatmap={loadingSeatmap}
-        seatmapData={seatmapData}
-        selectedSeat={selectedSeat}
-        setSelectedSeat={setSelectedSeat}
-        companions={companions}
-        selectedCompanion={selectedCompanion}
-        onSeatSelect={handleSeatSelect}
-        onCompanionSelect={handleCompanionSelect}
-        onConfirmSeat={handleConfirmSeat}
-        onClose={handleClose}
-      />
-      {showModal && (
-        <ConfirmModal
-          confirmBooking={confirmBooking}
-          cancel={() => setShowModal(false)}
+        {response && response.offers && response.offers.length > 0 && (
+          <DuffelFlightList
+            offers={response}
+            handleSelectFlight={handleSelectFlight}
+          />
+        )}
+        <SeatMapModalDuffel
+          showSeatmap={showSeatmap}
+          setShowSeatmap={setShowSeatmap}
+          loadingSeatmap={loadingSeatmap}
+          seatmapData={seatmapData}
           selectedSeat={selectedSeat}
+          setSelectedSeat={setSelectedSeat}
+          companions={companions}
           selectedCompanion={selectedCompanion}
+          onSeatSelect={handleSeatSelect}
+          onCompanionSelect={handleCompanionSelect}
+          onConfirmSeat={handleConfirmSeat}
+          onClose={handleClose}
         />
-      )}
-    </div>
+        {showModal && (
+          <ConfirmModal
+            confirmBooking={confirmBooking}
+            cancel={() => setShowModal(false)}
+            selectedSeat={selectedSeat}
+            selectedCompanion={selectedCompanion}
+          />
+        )}
+      </div>
+    </>
   );
 }

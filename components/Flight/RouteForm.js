@@ -1,4 +1,5 @@
-export default function RouteForm({ flightData, setFlightData, handleSubmit, submitting, setSelectedPath }) {
+export default function RouteForm({ flightData, setFlightData, handleSubmit, submitting, setSelectedPath, userRole }) {
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <h2 className="text-xl font-semibold mb-2">Enter Route Details</h2>
@@ -31,7 +32,7 @@ export default function RouteForm({ flightData, setFlightData, handleSubmit, sub
         <label className="block font-medium mb-1">Preferred Date (Optional)</label>
         <input
           type="date"
-          className="w-full border p-2 rounded"
+          className="w-full border p-2 rounded cursor-pointer"
           value={flightData.preferred_date}
           onChange={(e) => setFlightData({ ...flightData, preferred_date: e.target.value })}
         />
@@ -43,7 +44,7 @@ export default function RouteForm({ flightData, setFlightData, handleSubmit, sub
           className="flex-1 bg-green-600 text-white p-2 rounded hover:bg-green-700"
           disabled={submitting}
         >
-          {submitting ? "Checking..." : "Find Companions & Book"}
+          {submitting ? "Checking..." : userRole !== null && userRole === "companion" ? "Find Flights And Book" : userRole !== null && userRole === "traveller" ? "Find Flights & Companions" : "" }
         </button>
         <button
           type="button"
