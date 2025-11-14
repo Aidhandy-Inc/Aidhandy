@@ -1,27 +1,20 @@
 @import "tailwindcss";
 
-/* Light/Dark Theme */
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-/* ========================= */
-/* RESPONSIVE NAVBAR (FORCED) */
-/* ========================= */
-
-.navbar-wrapper {
+/* NAVBAR -------------------------------------------------- */
+.navbar {
   position: fixed;
   top: 0;
   left: 0;
@@ -29,87 +22,62 @@ body {
   height: 72px;
   background: #fff;
   border-bottom: 1px solid #e5e7eb;
-  z-index: 100;
-}
-
-.navbar-inner {
-  max-width: 1120px;
-  margin: 0 auto;
-  height: 100%;
-  padding: 0 16px;
+  z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0 16px;
 }
 
-/* Logo */
 .nav-logo {
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: bold;
   color: #1d9fd8;
   text-decoration: none;
 }
 
-/* Desktop Links */
 .nav-links {
   display: flex;
   gap: 20px;
-  align-items: center;
 }
 
 .nav-links a {
   text-decoration: none;
-  color: #111827;
+  color: #222;
 }
 
 .nav-links a:hover {
   color: #1d9fd8;
 }
 
-.nav-cta {
-  background: #1d9fd8;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-weight: 600;
-}
-
 /* Mobile */
-/* Hide desktop, show hamburger */
-.nav-mobile-btn {
+.mobile-btn {
   display: none;
-  font-size: 28px;
+  font-size: 32px;
   background: none;
   border: none;
-  cursor: pointer;
 }
 
-/* Dropdown (mobile) */
-.nav-mobile-menu {
+.mobile-menu {
   display: none;
   flex-direction: column;
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
+  gap: 12px;
+  background: white;
   padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.nav-mobile-menu a {
-  text-decoration: none;
-  color: #111827;
-  padding: 6px 0;
-}
-
-/* ======= MOBILE RULES ======= */
+/* RESPONSIVE --------------------------------------------- */
 @media (max-width: 768px) {
   .nav-links {
     display: none;
   }
 
-  .nav-mobile-btn {
+  .mobile-btn {
     display: block;
   }
 
-  .nav-mobile-menu.active {
+  .mobile-menu {
     display: flex;
   }
 }
