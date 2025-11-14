@@ -1,21 +1,16 @@
-/* --------------------------------------------- */
-/* Tailwind (keep it exactly like this)          */
-/* --------------------------------------------- */
-@import "tailwindcss";
+/* ------------------------------------------------ */
+/*  TAILWIND (required for responsive design)       */
+/* ------------------------------------------------ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* --------------------------------------------- */
-/* Root Theme Variables                          */
-/* --------------------------------------------- */
+/* ------------------------------------------------ */
+/*  Root Theme Variables                            */
+/* ------------------------------------------------ */
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,9 +26,9 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* --------------------------------------------------- */
-/* =============== NAVBAR: Desktop + Mobile ===========*/
-/* --------------------------------------------------- */
+/* ------------------------------------------------ */
+/* NAVBAR                                            */
+/* ------------------------------------------------ */
 
 .top-nav {
   position: fixed;
@@ -63,6 +58,7 @@ body {
   text-decoration: none;
 }
 
+/* Desktop links */
 .nav-desktop-links {
   display: flex;
   gap: 16px;
@@ -87,30 +83,30 @@ body {
   font-weight: 600;
 }
 
-/* Hamburger icon */
+/* Mobile hamburger */
 .nav-mobile-btn {
   font-size: 1.5rem;
   background: none;
   border: none;
   cursor: pointer;
-  display: none; /* hidden on desktop */
+  display: none;
 }
 
 /* Mobile dropdown */
 .nav-mobile-menu {
-  display: none; /* default hidden */
+  display: none;
 }
 
-/* --------------------------------------------- */
-/* Mobile Rules (≤ 768px)                       */
-/* --------------------------------------------- */
+/* ------------------------------------------------ */
+/* MOBILE (≤768px)                                   */
+/* ------------------------------------------------ */
 @media (max-width: 768px) {
   .nav-desktop-links {
-    display: none; /* hide top-right nav */
+    display: none;
   }
 
   .nav-mobile-btn {
-    display: block; /* show hamburger */
+    display: block;
   }
 
   .nav-mobile-menu {
@@ -133,18 +129,18 @@ body {
   }
 }
 
-/* --------------------------------------------- */
-/* Desktop Rules (≥ 769px)                      */
-/* --------------------------------------------- */
+/* ------------------------------------------------ */
+/* DESKTOP (≥769px)                                  */
+/* ------------------------------------------------ */
 @media (min-width: 769px) {
   .nav-mobile-menu {
     display: none !important;
   }
 }
 
-/* --------------------------------------------- */
-/* Footer                                        */
-/* --------------------------------------------- */
+/* ------------------------------------------------ */
+/* FOOTER                                            */
+/* ------------------------------------------------ */
 .site-footer {
   margin-top: 40px;
   padding: 24px 16px;
