@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AidHandy — Travel Assistance, Simplified</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="AidHandy is a U.S.-based marketplace connecting air travelers with vetted companions for airport and in-flight support. Book safely. Travel easier." />
+  <meta name="theme-color" content="#1D9FD8" />
+  <link rel="canonical" href="https://www.aidhandy.com/" />
+  <style>
+    :root { --ah-blue:#1D9FD8; --ah-orange:#FF7A00; --ah-text:#333; --ah-muted:#667085; --ah-bg:#fff; --ah-border:#e5e7eb; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color: var(--ah-text); background: var(--ah-bg); line-height: 1.6; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+    header { border-bottom: 1px solid var(--ah-border); background: #fff; position: sticky; top: 0; z-index: 10; }
+    .nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+    .brand { display: flex; gap: 10px; align-items: center; color: var(--ah-blue); text-decoration: none; font-weight: 700; font-size: 20px; }
+    .nav a { color: var(--ah-text); text-decoration: none; margin-left: 18px; font-weight: 500; }
+    .btn { display:inline-block; padding: 12px 18px; border-radius: 10px; text-decoration: none; font-weight: 600; }
+    .btn-primary { background: var(--ah-blue); color: #fff; }
+    .btn-ghost { background: #fff; color: var(--ah-blue); border: 2px solid var(--ah-blue); }
+    .hero { background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 60%); padding: 56px 0 36px; border-bottom: 1px solid var(--ah-border); }
+    .hero h1 { font-size: clamp(28px, 5vw, 44px); margin: 0 0 14px; color: #0f172a; }
+    .hero p { color: var(--ah-muted); font-size: 18px; margin: 0 0 24px; }
+    .hero .cta { display:flex; gap: 12px; flex-wrap: wrap; }
+    .grid { display: grid; gap: 18px; grid-template-columns: repeat(12, 1fr); }
+    .card { border: 1px solid var(--ah-border); border-radius: 16px; padding: 18px; background:#fff; }
+    .shadow { box-shadow: 0 6px 24px rgba(2,8,23,0.06); }
+    h2 { color: var(--ah-blue); margin: 24px 0 8px; }
+    h3 { color: #0f172a; margin: 12px 0 6px; }
+    .kpis { display:flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; }
+    .kpis .k { flex:1 1 160px; border:1px solid var(--ah-border); border-radius:12px; padding:14px; text-align:center; background:#fff; }
+    .k .n { display:block; font-size: 24px; font-weight: 800; color:#0f172a; }
+    .k .l { display:block; color: var(--ah-muted); font-size: 13px; }
+    .section { padding: 36px 0; }
+    .list { margin: 0; padding-left: 18px; }
+    .badge { display:inline-block; font-size:12px; background:#ECFEFF; color:#0369a1; border:1px solid #bae6fd; padding:4px 8px; border-radius:999px; }
+    footer { border-top:1px solid var(--ah-border); padding: 24px 0; background:#fff; margin-top: 24px; }
+    footer a { color: var(--ah-muted); text-decoration:none; margin-right: 14px; font-size: 14px; }
+    .legal { color: var(--ah-muted); font-size: 12px; margin-top: 8px; }
+    /* Cookie banner */
+    .cookie { position: fixed; left: 16px; right: 16px; bottom: 16px; background:#0b1220; color:#e5e7eb; border-radius: 14px; padding: 14px; display: none; z-index: 20; }
+    .cookie a { color:#93c5fd; text-decoration: underline; }
+    .cookie .actions { margin-top: 8px; display: flex; gap: 10px; }
+    .cookie button { cursor: pointer; border:0; border-radius: 10px; padding: 10px 14px; font-weight: 600; }
+    .cookie .ok { background:#22c55e; color:#052e12; }
+    .cookie .decline { background:#334155; color:#e5e7eb; }
+    /* Responsive */
+    @media (max-width: 900px){ .grid { grid-template-columns: repeat(6, 1fr);} }
+    @media (max-width: 640px){ .grid { grid-template-columns: repeat(4, 1fr);} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="/" aria-label="AidHandy Home">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2 12h20" stroke="#1D9FD8" stroke-width="2" stroke-linecap="round"/><path d="M6 8l4 4-4 4" stroke="#FF7A00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        AidHandy
+      </a>
+      <nav>
+        <a href="/#how-it-works">How it works</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/terms.html">Terms</a>
+        <a href="/privacy-policy.html">Privacy</a>
+        <a class="btn btn-primary" href="#book">Book a Companion</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <span class="badge">U.S. launch · ATL · JFK · LAX</span>
+        <h1>Together, every flight feels easier.</h1>
+        <p>AidHandy connects travelers with vetted companions for airport navigation, check-in support, and in-flight reassurance. Safe. Simple. Compliant.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#book">Get started</a>
+          <a class="btn btn-ghost" href="/privacy-policy.html">Privacy-first operations</a>
+        </div>
+        <div class="kpis">
+          <div class="k"><span class="n">6 hrs</span><span class="l">Pre-flight reminder window</span></div>
+          <div class="k"><span class="n">100%</span><span class="l">Opt-in SMS compliance</span></div>
+          <div class="k"><span class="n">PCI</span><span class="l">Payments via Stripe</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="section">
+      <div class="wrap grid">
+        <div class="card shadow" style="grid-column: span 6;">
+          <h2>For Travelers</h2>
+          <p>Book on-demand support for airport check-in, gate changes, boarding, and in-flight reassurance. No spam. Clear pricing. Real humans.</p>
+          <ul class="list">
+            <li>Booking confirmations and updates via SMS/email</li>
+            <li>Companion profile transparency with ratings</li>
+            <li>Secure payments and receipts</li>
+          </ul>
+        </div>
+        <div class="card shadow" style="grid-column: span 6;">
+          <h2>For Companions</h2>
+          <p>Offer support on your schedule. AidHandy handles payments and notifications so you can focus on travelers.</p>
+          <ul class="list">
+            <li>Clear job details and flight timelines</li>
+            <li>Fast payouts with Stripe Connect</li>
+            <li>Support for schedule changes</li>
+          </ul>
+        </div>
+        <div class="card" style="grid-column: span 12;">
+          <h3>Compliance & Safety</h3>
+          <p class="legal">AidHandy is a marketplace. Companions are independent providers. We do not replace airline or medical staff. Follow all airline, TSA, and airport rules. In an emergency, call 911.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="book" class="section">
+      <div class="wrap grid">
+        <div class="card shadow" style="grid-column: span 7;">
+          <h2>Join as a Companion</h2>
+<p>Become part of the AidHandy companion network and get notified when we launch. Fill out the form below to join our early list.</p>
+
+         <iframe src="<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSerohAoLwb57SUB79ycG0EbS4UUCNJir9_AtAXQHS7CXsSkog/viewform?embedded=true" width="640" height="823" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>" width="640" height="823" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+
+
+
+
+        </div>
+
+        <div class="card" style="grid-column: span 5;">
+          <h3>What you’ll get</h3>
+          <ul class="list">
+            <li>Secure confirmation via email/SMS</li>
+            <li>Companion assignment with profile link</li>
+            <li>Change handling and status updates</li>
+            <li>Receipts for reimbursement or HSA if applicable</li>
+          </ul>
+          <h3>Questions?</h3>
+          <p>Visit <a href="contact.html">Contact</a> or email <a href="mailto:support@aidhandy.com">support@aidhandy.com</a>.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div>
+        <a href="/privacy-policy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+        <a href="/contact.html">Contact</a>
+      </div>
+      <div class="legal">© <span id="y"></span> AidHandy Inc. All rights reserved. AidHandy is a marketplace. Companions are independent providers.</div>
+    </div>
+  </footer>
+
+  <!-- Cookie banner -->
+  <div id="cookie" class="cookie" role="dialog" aria-live="polite" aria-label="Cookie consent">
+    We use strictly necessary and performance cookies to operate and improve AidHandy. See our <a href="/privacy-policy.html">Privacy Policy</a>.
+    <div class="actions">
+      <button class="ok" onclick="localStorage.setItem('ah_cookie','1');document.getElementById('cookie').style.display='none'">Accept</button>
+      <button class="decline" onclick="localStorage.setItem('ah_cookie','0');document.getElementById('cookie').style.display='none'">Decline non-essential</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+    if(localStorage.getItem('ah_cookie')===null){ document.getElementById('cookie').style.display='block'; }
+  </script>
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"AidHandy Inc.",
+    "url":"https://www.aidhandy.com",
+    "logo":"https://www.aidhandy.com/logo.png",
+    "sameAs":[],
+    "contactPoint":[{
+      "@type":"ContactPoint",
+      "contactType":"customer support",
+      "email":"support@aidhandy.com",
+      "areaServed":"US",
+      "availableLanguage":["en"]
+    }]
+  }
+  </script>
+</body>
+</html>
