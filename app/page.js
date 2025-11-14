@@ -7,7 +7,8 @@ export default function Home() {
   // Cookie banner
   useEffect(() => {
     if (localStorage.getItem("ah_cookie") === null) {
-      document.getElementById("cookie").style.display = "block";
+      const el = document.getElementById("cookie");
+      if (el) el.style.display = "block";
     }
   }, []);
 
@@ -42,9 +43,9 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="main-container">
+    <div style={{ maxWidth: 1120, margin: "0 auto", padding: "0 16px" }}>
 
-      {/* Structured Data */}
+      {/* STRUCTURED DATA */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -53,7 +54,6 @@ export default function Home() {
             "@type": "Organization",
             name: "AidHandy Inc.",
             url: "https://www.aidhandy.com",
-            logo: "https://www.aidhandy.com/logo.png",
             contactPoint: [
               {
                 "@type": "ContactPoint",
@@ -65,14 +65,14 @@ export default function Home() {
         }}
       />
 
-      {/* Pixel fallback */}
+      {/* NO SCRIPT */}
       <noscript>
         <img
           height="1"
           width="1"
           style={{ display: "none" }}
           src="https://www.facebook.com/tr?id=1195389679143314&ev=PageView&noscript=1"
-          alt="tracker"
+          alt="pixel"
         />
       </noscript>
 
@@ -80,28 +80,22 @@ export default function Home() {
       <section style={heroSection}>
         <span style={badgeStyle}>U.S. launch · ATL · JFK · LAX</span>
 
-        <h1 className="hero-title" style={heroTitle}>
-          Together, every flight feels easier.
-        </h1>
+        <h1 style={heroTitle}>Together, every flight feels easier.</h1>
 
-        <p className="hero-text" style={heroText}>
+        <p style={heroText}>
           AidHandy connects travelers with vetted companions for airport
           navigation, check-in support, and in-flight reassurance.
         </p>
 
         <div style={ctaRow}>
-          <a href="#book" style={primaryBtn}>
-            Get started
-          </a>
-          <Link href="/privacy" style={ghostBtn}>
-            Privacy-first operations
-          </Link>
+          <a href="#book" style={primaryBtn}>Get started</a>
+          <Link href="/privacy" style={ghostBtn}>Privacy-first operations</Link>
         </div>
       </section>
 
-      {/* TRAVELERS / COMPANIONS SECTION */}
+      {/* TRAVELERS & COMPANIONS */}
       <section style={{ marginTop: 40 }}>
-        <div className="card-grid">
+        <div style={cardGrid}>
           <div style={card}>
             <h2 style={cardTitle}>For Travelers</h2>
             <p>
@@ -109,22 +103,22 @@ export default function Home() {
               boarding, and in-flight reassurance.
             </p>
             <ul style={ulClean}>
-              <li>Booking confirmations via SMS/email</li>
-              <li>Companion transparency with ratings</li>
-              <li>Secure payments and receipts</li>
+              <li>SMS/email confirmations</li>
+              <li>Companion transparency</li>
+              <li>Secure payments</li>
             </ul>
           </div>
 
           <div style={card}>
             <h2 style={cardTitle}>For Companions</h2>
             <p>
-              Offer support on your schedule. AidHandy handles payments so 
+              Offer support on your schedule. AidHandy handles payments so
               you can focus on travelers.
             </p>
             <ul style={ulClean}>
               <li>Clear job timelines</li>
               <li>Fast payouts</li>
-              <li>Flight schedule change support</li>
+              <li>Flight change alerts</li>
             </ul>
           </div>
         </div>
@@ -139,7 +133,7 @@ export default function Home() {
           <iframe
             src="https://docs.google.com/forms/d/e/1FAIpQLSfS955PSpGmBXbM7xUatap6uERhr8_rEs5Bj4TgJ-Fy-Pjd3w/viewform?embedded=true"
             width="100%"
-            height="1600"
+            height="1650"
             style={{ border: 0, marginTop: 12 }}
           ></iframe>
         </div>
@@ -159,7 +153,7 @@ export default function Home() {
 
       {/* COOKIE BANNER */}
       <div id="cookie" style={cookieBar}>
-        We use cookies. See our{" "}
+        We use cookies. See{" "}
         <Link href="/privacy" style={{ color: "#93c5fd" }}>
           Privacy Policy
         </Link>
@@ -186,11 +180,12 @@ export default function Home() {
           </button>
         </div>
       </div>
+
     </div>
   );
 }
 
-/* ------ STYLES ------ */
+/* ---------------- STYLES ---------------- */
 
 const heroSection = {
   marginTop: 20,
@@ -216,6 +211,9 @@ const heroText = {
   fontSize: 18,
   color: "#555",
   marginTop: 10,
+  maxWidth: 700,
+  marginLeft: "auto",
+  marginRight: "auto",
 };
 
 const ctaRow = {
@@ -243,11 +241,16 @@ const ghostBtn = {
   textDecoration: "none",
 };
 
+const cardGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+  gap: 20,
+};
+
 const card = {
   border: "1px solid #e5e7eb",
   borderRadius: 16,
   padding: 20,
-  marginBottom: 24,
   background: "#fff",
 };
 
@@ -256,10 +259,7 @@ const cardTitle = {
   marginBottom: 12,
 };
 
-const ulClean = {
-  paddingLeft: 18,
-  marginTop: 12,
-};
+const ulClean = { paddingLeft: 18, marginTop: 12 };
 
 const footerStyle = {
   padding: 24,
