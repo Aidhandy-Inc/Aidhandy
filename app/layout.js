@@ -1,8 +1,6 @@
 "use client";
 
-import "../globals.css";        // <-- THIS WAS YOUR BUG
-import { useState } from "react";
-import Link from "next/link";
+import "../globals.css";
 import Navbar from "./navbar.jsx";
 
 export const metadata = {
