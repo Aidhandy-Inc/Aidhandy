@@ -1,5 +1,5 @@
 import "./globals.css";
-import Navbar from "./navbar.jsx";
+import Navbar from '../components/Navbar.jsx';
 
 export const metadata = {
   title: "AidHandy",
