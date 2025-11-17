@@ -1,101 +1,35 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
-/* Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
 }
 
 body {
-  background: #ffffff;
-  color: #111;
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+ font-family: 'Poppins', sans-serif;}
+
+button, link, a {
+  cursor: pointer;
 }
-
-/* NAVBAR -------------------------------------------------- */
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 72px;
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-}
-
-.navbar-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  width: 100%;
-  padding: 0 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nav-logo {
-  font-size: 22px;
-  font-weight: bold;
-  color: #1d9fd8;
-  text-decoration: none;
-}
-
-.nav-links {
-  display: flex;
-  gap: 20px;
-}
-
-.nav-links a {
-  color: #111;
-  text-decoration: none;
-}
-
-.nav-links a:hover {
-  color: #1d9fd8;
-}
-
-.nav-cta {
-  background: #1d9fd8;
-  color: #fff !important;
-  padding: 8px 16px;
-  border-radius: 8px;
-}
-
-/* Mobile hamburger */
-.nav-mobile-btn {
-  display: none;
-  font-size: 34px;
-  background: none;
-  border: none;
-}
-
-/* Mobile menu (hidden by default) */
-.nav-mobile-menu {
-  display: none;
-  flex-direction: column;
-  gap: 12px;
-  padding: 14px 16px;
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.nav-mobile-menu.active {
-  display: flex;
-}
-
-/* RESPONSIVE RULES --------------------------------------- */
-@media (max-width: 768px) {
-  .nav-links {
-    display: none;
-  }
-
-  .nav-mobile-btn {
-    display: block;
-  }
+.oring{
+  background:  #ff7a00 !important;
 }

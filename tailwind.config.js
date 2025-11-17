@@ -3,10 +3,15 @@ module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
-    "./aidhandy-site/**/*.{html,js}", 
+    "./pages/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        // 👇 Use Poppins as the default sans font
+        sans: ["var(--font-poppins)", "Poppins", "sans-serif"],
+      },
+    },
   },
   plugins: [],
 };
