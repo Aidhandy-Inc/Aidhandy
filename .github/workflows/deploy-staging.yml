@@ -43,4 +43,4 @@ jobs:
       - name: Trigger Vercel Deployment
         run: |
           echo "Staging checks passed!"
-          echo "Vercel will now auto-deploy because staging branch updated."
+          echo "Vercel will now auto-deploy the staging branch."
