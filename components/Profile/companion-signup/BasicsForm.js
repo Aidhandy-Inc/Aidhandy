@@ -5,14 +5,24 @@ import PhoneOtpInput from "./PhoneOTP";
 const BasicsForm = ({ form, update, errors, emailFromProps, profile }) => (
   <div className="space-y-6">
     <Field
-      id="fullName"
-      label="Full Name"
-      value={form.fullName}
-      onChange={(v) => update("fullName", v)}
+      id="firstName"
+      label="First Name"
+      value={form.firstName}
+      onChange={(v) => update("firstName", v)}
       placeholder="Jane Doe"
     />
-    {errors.fullName && (
-      <p className="text-rose-600 text-sm mt-1">{errors.fullName}</p>
+    {errors.firstName && (
+      <p className="text-rose-600 text-sm mt-1">{errors.firstName}</p>
+    )}
+     <Field
+      id="lastName"
+      label="Last Name"
+      value={form.lastName}
+      onChange={(v) => update("lastName", v)}
+      placeholder="Jane Doe"
+    />
+    {errors.lastName && (
+      <p className="text-rose-600 text-sm mt-1">{errors.lastName}</p>
     )}
 
     {/* ✅ Email Verification Component */}
@@ -63,8 +73,8 @@ const BasicsForm = ({ form, update, errors, emailFromProps, profile }) => (
         <option value="">Select gender</option>
         <option value="male">Male</option>
         <option value="female">Female</option>
-        <option value="female">Non-Binary</option>
-        <option value="female">Prefer not to say</option>
+         <option value="female">Prefer not to say</option>
+          <option value="female">Non Binary</option>
       </select>
       {errors.gender && (
         <p className="text-rose-600 text-sm mt-1">{errors.gender}</p>

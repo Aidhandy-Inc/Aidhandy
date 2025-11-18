@@ -28,7 +28,8 @@ export default function CompanionSignUpPage({ email , profile }) {
 
   const [formData, setFormData] = useState({
     basics: {
-      fullName: "",
+      firstName: "",
+      lastName:"",
       email: email || "",
       phone: "",
       dob: "",
@@ -95,12 +96,13 @@ export default function CompanionSignUpPage({ email , profile }) {
     const { basics } = formData;
 
     if (!profilePhoto) errs.profilePhoto = "Please Upload Profile Photo";
-    if (!basics.fullName.trim()) errs.fullName = "Full name is required";
+    if (!basics.firstName.trim()) errs.firstName = "FirstName is required";
+    if (!basics.lastName.trim()) errs.lastName = "LastName is required";
     if (!basics.dob.trim()) errs.dob = "DOB is required";
     if (!basics.gender.trim()) errs.gender = "Gender is required";
 
-    if (!email || !email.match(/^\S+@\S+\.\S+$/))
-      errs.email = "Valid email is required";
+    // if (!email || !email.match(/^\S+@\S+\.\S+$/))
+    //   errs.email = "Valid email is required";
 
     if (!basics.phone.match(/^\+?[0-9\s-]{7,20}$/))
       errs.phone = "Please enter a valid phone number";
@@ -231,7 +233,6 @@ export default function CompanionSignUpPage({ email , profile }) {
       //   throw new Error(saveResult.error);
       // }
 
-      // console.log(saveResult);
       // ! In your client component where you call saveCompanionData
       const {
         data: { session },

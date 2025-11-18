@@ -55,7 +55,8 @@ serve(async (req) => {
 
     // Prepare the companion data - EXACT SAME LOGIC as your server action
     const companionData = {
-      full_name: formData?.basics?.fullName,
+      first_name: formData?.basics?.firstName,
+      last_name: formData?.basics?.lastName,
       email: formData?.basics?.email,
       phone: formData?.basics?.phone,
       dob: formData?.basics?.dob,

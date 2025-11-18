@@ -1,4 +1,4 @@
-// componentsss/Flights/FlightCard.jsx
+// components/Flights/FlightCard.jsx
 import { useState } from "react";
 import { supabase } from "@/libs/supabaseClient";
 
