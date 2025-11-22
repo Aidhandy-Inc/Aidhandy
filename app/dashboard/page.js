@@ -36,15 +36,15 @@ export default async function Page(props) {
     }
   );
 
-  // Fetch user & profile
-  const { user, profile: existingProfile } = await getUserAndProfile();
+  // Fetch user & profile (FIXED)
+  const { user, profile: existingProfile } = await getUserAndProfile(supabase);
 
-  // Public visitor (no role, no magic link, no user)
+  // Public visitor (not logged in)
   if (!role && !searchParams?.value && !user) {
     return <DashboardClient user={null} profile={null} role={null} />;
   }
 
-  // Handle onboarding flows
+  // Onboarding flows
   if (role) {
     let profile = existingProfile;
 
@@ -68,14 +68,12 @@ export default async function Page(props) {
         .select()
         .single();
 
-      if (insertError) {
-        console.error("Error inserting user:", insertError);
-      } else {
+      if (!insertError) {
         profile = newProfile;
       }
     }
 
-    // Traveller onboarding: create traveller row
+    // Traveller onboarding
     if (profile?.role === "traveller" && firstName && lastName && email) {
       const { data: existingTraveller } = await supabase
         .from("travellers")
@@ -84,34 +82,28 @@ export default async function Page(props) {
         .single();
 
       if (!existingTraveller) {
-        const { error: travellerInsertError } = await supabase
-          .from("travellers")
-          .insert([
-            {
-              user_id: user.id,
-              first_name: firstName,
-              last_name: lastName,
-            },
-          ]);
+        await supabase.from("travellers").insert([
+          {
+            user_id: user.id,
+            first_name: firstName,
+            last_name: lastName,
+          },
+        ]);
 
-        if (travellerInsertError) {
-          console.error("Error inserting traveller:", travellerInsertError);
-        } else {
-          const {
-            data: { session },
-          } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-          await supabase.functions.invoke("send-traveller-verification-email", {
-            body: { user_id: user.id, email: user.email },
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-            },
-          });
-        }
+        await supabase.functions.invoke("send-traveller-verification-email", {
+          body: { user_id: user.id, email: user.email },
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        });
       }
     }
 
-    // FIXED VERSION (broken before)
+    // Pending traveller must verify email
     if (profile?.status === "pending" && role === "traveller") {
       return (
         <div className="h-screen flex flex-col items-center justify-center">
@@ -120,10 +112,10 @@ export default async function Page(props) {
       );
     }
 
-    // Default: authenticated dashboard
+    // Authenticated dashboard
     return <DashboardClient user={user} profile={profile} role={role} />;
   }
 
-  // Fallback (public or logged-in returning users)
+  // Default fallback
   return <DashboardClient user={user} profile={existingProfile} role={role} />;
 }
