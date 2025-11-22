@@ -1,12 +1,14 @@
+// Force this page to be client-side so router can work safely
 "use client";
+
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function Home() {
+export default function HomePage() {
   const router = useRouter();
 
-  // Redirect all visitors to dashboard
   useEffect(() => {
+    if (!router) return;
     router.replace("/dashboard");
   }, [router]);
 
