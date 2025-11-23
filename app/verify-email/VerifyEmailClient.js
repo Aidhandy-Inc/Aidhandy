@@ -1,18 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
 
-export default function VerifyEmailClient() {
-  const [token, setToken] = useState(null);
-  const [status, setStatus] = useState("Verifying your email...");
+export default function VerifyEmailClient({ token }) {
+  const [activeToken, setActiveToken] = useState(token ?? null);
+  const [status, setStatus] = useState(
+    token ? "Verifying your email..." : "Missing verification token."
+  );
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const t = params.get("token");
-    if (t) setToken(t);
-  }, []);
+    if (token) {
+      setActiveToken(token);
+      setStatus("Verifying your email...");
+    }
+  }, [token]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!activeToken) return;
 
     const verifyEmail = async () => {
       try {
@@ -24,7 +27,7 @@ export default function VerifyEmailClient() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
           },
-          body: JSON.stringify({ token }),
+          body: JSON.stringify({ token: activeToken }),
         });
 
         const result = await response.json();
@@ -52,7 +55,7 @@ export default function VerifyEmailClient() {
     };
 
     verifyEmail();
-  }, [token]);
+  }, [activeToken]);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen text-center">
