@@ -1,9 +1,16 @@
 "use client";
 import TravellerSignUpPage from "@/components/Profile/traveller-signup/TravellerSignUpPage";
 import { useUser } from "@/context/ClientProvider";
+import LoadingState from "@/components/Profile/LoadingState";
 
 export default function ProfilePage() {
-  const { user, profile } = useUser();
+  const userContext = useUser();
+  const { user, profile } = userContext || { user: null, profile: null };
+
+  if (!userContext) {
+    return <LoadingState />;
+  }
+
   return (
     <>
       {profile && profile?.type === "traveller" ? (
@@ -12,9 +19,11 @@ export default function ProfilePage() {
           user={user}
           email={profile?.email}
         />
-      ) : profile && profile?.type === "companion" ? <>
-        
-      </> : "" }
+      ) : profile && profile?.type === "companion" ? (
+        <></>
+      ) : (
+        ""
+      )}
     </>
   );
 }
