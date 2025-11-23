@@ -9,8 +9,11 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Disable static optimization for all pages
-  output: 'standalone',
+  // Disable static page generation to avoid memory issues
+  experimental: {
+    workerThreads: false,
+    cpus: 1,
+  },
 };
 
 module.exports = nextConfig;
