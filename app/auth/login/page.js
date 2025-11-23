@@ -1,3 +1,4 @@
+// Fixed version with Suspense
 Perfect! Now paste this complete code (I'll give it to you in one piece - make sure you copy ALL of it):
 javascript"use client";
 import { useState, useEffect, Suspense } from "react";
