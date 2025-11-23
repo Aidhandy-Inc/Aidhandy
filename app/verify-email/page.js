@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import VerifyEmailClient from "./VerifyEmailClient";
 
+export const dynamic = "force-dynamic";
+
 function VerifyEmailFallback() {
   return (
     <div className="flex flex-col items-center justify-center h-screen text-center">
