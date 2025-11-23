@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/libs/supabaseClient";
 
-export default function FlightSuccess() {
+function FlightSuccessContent() {
   const searchParams = useSearchParams();
   const session_id = searchParams.get("session_id");
   const [status, setStatus] = useState("Processing your booking...");
@@ -11,7 +11,6 @@ export default function FlightSuccess() {
   useEffect(() => {
     const finalizeBooking = async () => {
       try {
-        // 🔹 1. Verify Supabase session
         const {
           data: { session },
         } = await supabase.auth.getSession();
@@ -24,7 +23,6 @@ export default function FlightSuccess() {
           return;
         }
 
-        // 🔹 2. Fetch pending booking from localStorage
         const pendingBooking = JSON.parse(
           localStorage.getItem("pendingBooking")
         );
@@ -37,7 +35,6 @@ export default function FlightSuccess() {
           return;
         }
 
-        // Extract all values
         const {
           selectedFlight,
           profile,
@@ -49,7 +46,6 @@ export default function FlightSuccess() {
           stopDescription,
         } = pendingBooking;
 
-        // 🔹 3. Create Duffel order (after Stripe success)
         const createOrderRes = await fetch(
           `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/duffel-create-booking`,
           {
@@ -63,19 +59,19 @@ export default function FlightSuccess() {
                 selected_offers: [selectedFlight.id],
                 payments: [
                   {
-                    type: "balance", // ⚡ Duffel only accepts "balance" here
+                    type: "balance",
                     amount: selectedFlight.total_amount,
                     currency: selectedFlight.total_currency,
                   },
                 ],
                 passengers: [
                   {
-                    id: selectedFlight.passengers?.[0]?.id || "pas_placeholder", // ⚡ Use actual passenger id from offer if available
+                    id: selectedFlight.passengers?.[0]?.id || "pas_placeholder",
                     type: "adult",
                     title: "mr",
                     gender: "m",
                     born_on: "1990-01-01",
-                    phone_number: profile.phone_number || "+12025550123", // ⚡ Provide a valid E.164 number
+                    phone_number: profile.phone_number || "+12025550123",
                     email: profile.email,
                     given_name: profile.full_name?.split(" ")[0] || "Traveller",
                     family_name: profile.full_name?.split(" ")[1] || "User",
@@ -100,7 +96,6 @@ export default function FlightSuccess() {
         const duffelStatus = order.status || "pending";
         setStatus(`✅ Duffel order created (${duffelStatus})`);
 
-        // 🔹 4. Extract segment details safely
         const firstSlice = order.slices?.[0] || selectedFlight.slices?.[0];
         const segments = firstSlice?.segments || [];
         const firstSegment = segments[0];
@@ -133,14 +128,13 @@ export default function FlightSuccess() {
             flightData?.preferred_date,
           seat_number: selectedSeat?.name || "TBD",
           status: duffelStatus,
-          departure_iata: firstSegment?.origin?.iata_code || "Unknown", // ✅ added
-          destination_iata: lastSegment?.destination?.iata_code || "Unknown", // ✅ added
-          price: order.total_amount || selectedFlight.total_amount || 0, // ✅ add price here
+          departure_iata: firstSegment?.origin?.iata_code || "Unknown",
+          destination_iata: lastSegment?.destination?.iata_code || "Unknown",
+          price: order.total_amount || selectedFlight.total_amount || 0,
           stop_description: stopDescription,
           created_at: new Date().toISOString(),
         };
 
-        // 🔹 5. Store in Supabase
         const { data: bookingData, error: bookingError } = await supabase
           .from("bookings")
           .insert([booking])
@@ -148,7 +142,6 @@ export default function FlightSuccess() {
 
         if (bookingError) throw bookingError;
 
-        // 🔹 6. Update pairing if applicable
         if (pairingId) {
           await supabase
             .from("pairings")
@@ -159,7 +152,6 @@ export default function FlightSuccess() {
             .eq("id", pairingId);
         }
 
-        // ✅ Done!
         alert(
           `✅ Flight booking ${duffelStatus}!` +
             (selectedCompanion
@@ -168,7 +160,6 @@ export default function FlightSuccess() {
         );
         setStatus("🎉 Booking completed successfully!");
 
-        // 🧹 Optional cleanup
         localStorage.removeItem("pendingBooking");
       } catch (err) {
         console.error("Booking finalization error:", err);
@@ -186,5 +177,17 @@ export default function FlightSuccess() {
       </h1>
       <p className="text-gray-600 mt-4">{status}</p>
     </div>
+  );
+}
+
+export default function FlightSuccess() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center h-[80vh]">
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    }>
+      <FlightSuccessContent />
+    </Suspense>
   );
 }
