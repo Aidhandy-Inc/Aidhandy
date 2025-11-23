@@ -1,16 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 
 export default function VerifyEmailClient() {
-  const searchParams = useSearchParams();
   const [token, setToken] = useState(null);
   const [status, setStatus] = useState("Verifying your email...");
 
   useEffect(() => {
-    const t = searchParams.get("token");
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get("token");
     if (t) setToken(t);
-  }, [searchParams]);
+  }, []);
 
   useEffect(() => {
     if (!token) return;
