@@ -20,7 +20,6 @@ import Sentry from "@/sentry.client.config";
 export default function FlightChecker() {
   const userContext = useUser();
 const { user, profile } = userContext || { user: null, profile: null };
-const { user, profile } = userContext || { user: null, profile: null };
   const [selectedPath, setSelectedPath] = useState(null);
   const [flightData, setFlightData] = useState({
     departure_airport: "",
