@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/static/:path*", "destination": "/static/:path*" },
+    { "source": "/app/:path*", "destination": "/nextapp/:path*" },
+    { "source": "/auth/:path*", "destination": "/nextapp/:path*" },
+    { "source": "/dashboard/:path*", "destination": "/nextapp/:path*" },
+    { "source": "/providers/:path*", "destination": "/nextapp/:path*" },
+    { "source": "/companion/:path*", "destination": "/nextapp/:path*" },
+    { "source": "/admin/:path*", "destination": "/nextapp/:path*" }
+  ]
+}
