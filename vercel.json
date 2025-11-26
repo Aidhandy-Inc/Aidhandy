@@ -1,12 +1,13 @@
 {
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
-    { "source": "/:file(.*)", "destination": "/:file" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/privacy-policy", "destination": "/privacy-policy.html" },
+    { "source": "/cookie-policy", "destination": "/cookie-policy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/messaging-terms", "destination": "/messaging-terms.html" },
+    { "source": "/thankyou", "destination": "/thankyou.html" },
 
-    { "source": "/app/:path*", "destination": "/nextapp/app/:path*" },
-    { "source": "/auth/:path*", "destination": "/nextapp/app/auth/:path*" },
-    { "source": "/dashboard/:path*", "destination": "/nextapp/app/dashboard/:path*" },
-    { "source": "/verify-email/:path*", "destination": "/nextapp/app/verify-email/:path*" },
-    { "source": "/stripe/:path*", "destination": "/nextapp/app/stripe/:path*" }
+    { "source": "/(.*)", "destination": "/nextapp/$1" }
   ]
 }
