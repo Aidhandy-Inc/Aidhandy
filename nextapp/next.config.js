@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Serve the dashboard app under /dashboard while keeping static root pages
+  basePath: "/dashboard",
+  assetPrefix: "/dashboard",
   images: {
     domains: [],
   },
