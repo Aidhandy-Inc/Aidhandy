@@ -1,4 +1,5 @@
 "use client";
+import CompanionProfilePage from "@/components/Profile/CompanionProfile/CompanionProfile";
 import TravellerSignUpPage from "@/components/Profile/traveller-signup/TravellerSignUpPage";
 import { useUser } from "@/context/ClientProvider";
 
@@ -12,9 +13,17 @@ export default function ProfilePage() {
           user={user}
           email={profile?.email}
         />
-      ) : profile && profile?.type === "companion" ? <>
-        
-      </> : "" }
+      ) : profile && profile?.type === "companion" ? (
+        <>
+          <CompanionProfilePage
+            profile={profile}
+            user={user}
+            email={profile?.email}
+          />
+        </>
+      ) : (
+        ""
+      )}
     </>
   );
 }

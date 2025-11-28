@@ -4,6 +4,11 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/libs/supabaseClient";
 import "react-phone-input-2/lib/style.css";
 import PhoneInput from "react-phone-input-2";
+import {
+  isValidPhoneNumber,
+  parsePhoneNumberFromString,
+} from "libphonenumber-js";
+import { useError } from "@/context/ErrorContext";
 
 export default function PhoneInput2({
   value,
@@ -12,8 +17,9 @@ export default function PhoneInput2({
   onVerified,
   profile,
   className = "",
-  checkVerify
+  checkVerify,
 }) {
+  const { showError, showSuccess } = useError();
   const [isValid, setIsValid] = useState(false);
   const [country, setCountry] = useState(null);
   const [sending, setSending] = useState(false);
@@ -22,14 +28,11 @@ export default function PhoneInput2({
   const [verifying, setVerifying] = useState(false);
   const [verified, setVerified] = useState(false);
   const [serverMsg, setServerMsg] = useState("");
-
   // Rate limiting states
   const [resendCooldown, setResendCooldown] = useState(0);
   const [attemptsLeft, setAttemptsLeft] = useState(3);
   const [cooldownUntil, setCooldownUntil] = useState(null);
-
   const phoneRegex = /^\+?[0-9\s-]{7,20}$/;
-
   // Countdown timer for resend cooldown
   useEffect(() => {
     let interval;
@@ -54,19 +57,77 @@ export default function PhoneInput2({
       const remaining = cooldownUntil - now;
       if (remaining > 0) {
         const minutes = Math.ceil(remaining / (1000 * 60));
-        setServerMsg(`Too many attempts. Try again in ${minutes} minutes.`);
+        showError(`Too many attempts. Try again in ${minutes} minutes.`);
       } else {
         setCooldownUntil(null);
         setAttemptsLeft(3);
-        setServerMsg("");
+        // setServerMsg("");
       }
     }
   }, [cooldownUntil]);
 
+  const cleanPhone = (value) => {
+    return value.replace(/[^+\d]/g, "");
+  };
+
+  const validatePhone = (phone, countryData) => {
+    if (!phone) {
+      return false;
+    }
+
+    const cleaned = cleanPhone(phone);
+
+    if (cleaned.length < 5) {
+      return false;
+    }
+
+    try {
+      let phoneNumber;
+
+      if (countryData && countryData.dialCode) {
+        if (cleaned.startsWith(countryData.dialCode)) {
+          phoneNumber = parsePhoneNumberFromString(`+${cleaned}`);
+        } else {
+          phoneNumber = parsePhoneNumberFromString(
+            `+${countryData.dialCode}${cleaned}`
+          );
+        }
+      } else {
+        phoneNumber = parsePhoneNumberFromString(
+          cleaned.startsWith("+") ? cleaned : `+${cleaned}`
+        );
+      }
+
+      if (!phoneNumber) {
+        if (cleaned.length > 9) {
+          showError("Invalid phone number format");
+        }
+        return false;
+      }
+
+      const isValid = phoneNumber.isValid();
+
+      if (isValid) {
+        showSuccess("Valid phone number");
+      } else if (cleaned.length > 9) {
+        showError("Please enter a valid phone number");
+      }
+
+      return isValid;
+    } catch (error) {
+      console.error("Validation error:", error);
+      if (cleaned.length > 9) {
+        showError("Invalid phone number");
+      }
+      return false;
+    }
+  };
+
   const handlePhoneChange = (value, countryData) => {
     onChange(value);
     setCountry(countryData);
-    const ok = phoneRegex.test(value);
+
+    const ok = validatePhone(value, countryData);
     setIsValid(ok);
     if (!ok) {
       setOtpSent(false);
@@ -84,7 +145,7 @@ export default function PhoneInput2({
     // Check rate limits
     if (cooldownUntil) {
       const remaining = Math.ceil((cooldownUntil - Date.now()) / (1000 * 60));
-      setServerMsg(`Too many attempts. Try again in ${remaining} minutes.`);
+      showError(`Too many attempts. Try again in ${remaining} minutes.`);
       return;
     }
 
@@ -99,7 +160,7 @@ export default function PhoneInput2({
     try {
       if (!profile) {
         console.error("No profile available");
-        setServerMsg("Please sign in to send OTP.");
+        showError("Please sign in to send OTP.");
         return;
       }
 
@@ -155,7 +216,7 @@ export default function PhoneInput2({
 
       if (!accessToken) {
         console.error("No access token found after all attempts");
-        setServerMsg(
+        showError(
           "Authentication issue. Please refresh the page and try again."
         );
         return;
@@ -185,7 +246,7 @@ export default function PhoneInput2({
 
       if (error) {
         console.error("Edge function error:", error);
-        setServerMsg(error.message || "Failed to send OTP.");
+        showError(error.message || "Failed to send OTP.");
         return;
       }
 
@@ -193,7 +254,7 @@ export default function PhoneInput2({
         setOtpSent(true);
         setResendCooldown(60);
         setAttemptsLeft((prev) => prev - 1);
-        setServerMsg(
+        showSuccess(
           `OTP sent to ${country.name} number. ${
             attemptsLeft - 1
           } attempts left.`
@@ -203,11 +264,11 @@ export default function PhoneInput2({
           setCooldownUntil(Date.now() + 10 * 60 * 1000);
         }
       } else {
-        setServerMsg(data?.error || "Failed to send OTP.");
+        showError(data?.error || "Failed to send OTP.");
       }
     } catch (err) {
       console.error("Send OTP error:", err);
-      setServerMsg("Network error. Please try again.");
+      showError("Network error. Please try again.");
     } finally {
       setSending(false);
     }
@@ -215,7 +276,7 @@ export default function PhoneInput2({
 
   const handleVerifyOtp = async () => {
     if (!otpValue || otpValue.length !== 6) {
-      setServerMsg("Please enter a valid 6-digit OTP.");
+      showError("Please enter a valid 6-digit OTP.");
       return;
     }
 
@@ -225,7 +286,7 @@ export default function PhoneInput2({
     try {
       // ✅ Use user from props for authentication check
       if (!profile) {
-        setServerMsg("Please sign in to verify OTP.");
+        showError("Please sign in to verify OTP.");
         return;
       }
 
@@ -234,7 +295,7 @@ export default function PhoneInput2({
         data: { session },
       } = await supabase.auth.getSession();
       if (!session?.access_token) {
-        setServerMsg("Please sign in to verify OTP.");
+        showError("Please sign in to verify OTP.");
         return;
       }
 
@@ -253,20 +314,20 @@ export default function PhoneInput2({
 
       if (error) {
         console.error("Verify OTP error:", error);
-        setServerMsg(error.message || "Failed to verify OTP.");
+        showError(error.message || "Failed to verify OTP.");
         return;
       }
 
       if (data?.success) {
         setVerified(true);
-        setServerMsg("✅ Phone number verified successfully!");
+        showSuccess("Phone number verified successfully!");
         if (onVerified) onVerified(true);
       } else {
-        setServerMsg(data?.error || "Invalid OTP. Please try again.");
+        showError(data?.error || "Invalid OTP. Please try again.");
       }
     } catch (err) {
       console.error("Verify OTP error:", err);
-      setServerMsg("Network error. Please try again.");
+      showError("Network error. Please try again.");
     } finally {
       setVerifying(false);
     }
@@ -283,15 +344,21 @@ export default function PhoneInput2({
         htmlFor="phone"
         className="block text-sm font-medium text-slate-700 "
       >
-        Phone Number {checkVerify && checkVerify === true ? <span className="text-green-500">✅</span> : <span className="text-rose-500">*</span>} 
+        Phone Number{" "}
+        {checkVerify && checkVerify === true ? (
+          <span className="text-green-500">✅</span>
+        ) : (
+          <span className="text-rose-500">*</span>
+        )}
       </label>
-      <div 
-       className={`border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}>
+      <div
+        className={`border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
+      >
         <PhoneInput
           country={"pk"}
           value={value}
           onChange={handlePhoneChange}
-           disabled={checkVerify === true}
+          disabled={checkVerify === true}
           inputClass="!w-full !h-12 !text-gray-800 !text-base !pl-12 !border-none !bg-transparent !focus:ring-0"
           buttonClass="!border-none !bg-transparent"
           dropdownClass="!bg-white !text-gray-800"

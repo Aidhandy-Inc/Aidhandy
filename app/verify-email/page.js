@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function VerifyEmailPage() {
+  const router = useRouter()
   const searchParams = useSearchParams();
   const [token, setToken] = useState(null);
   const [status, setStatus] = useState("Verifying your email...");
@@ -37,6 +38,8 @@ export default function VerifyEmailPage() {
 
         if (result.success) { 
           setStatus(`✅ Email verified successfully! Welcome ${result.email}`);
+          router.push('/dashboard/profile')
+           router.refresh();
 
         } else {
           setStatus(result.error || "Verification failed");

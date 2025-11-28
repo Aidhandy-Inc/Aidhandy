@@ -3,6 +3,7 @@ import DashboardClient from "./components/DashboardClient";
 import { getUserAndProfile } from "@/libs/getUserData";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import RefreshButton from "@/components/RefreshButton";
 
 export default async function Page(props) {
   const searchParams = await props.searchParams;
@@ -47,7 +48,6 @@ export default async function Page(props) {
   // ✅ Step 4: If magic link / query params are present → continue existing flow
   if (role) {
     let profile = existingProfile;
-
     // ✅ Create profile if not exists
     if (!profile && role) {
       console.log("no profile present");
@@ -77,7 +77,7 @@ export default async function Page(props) {
     }
 
     // ✅ Traveller-specific logic (keep your existing code intact)
-    if (profile?.role === "traveller" && firstName && lastName && email) {
+    if (profile?.role === "traveller" && firstName && lastName && email) {  
       const { data: existingTraveller } = await supabase
         .from("travellers")
         .select("id")
@@ -109,20 +109,26 @@ export default async function Page(props) {
             },
           });
 
-          console.log("Traveller added successfully.");
+          // Return the refresh message component
+      return (
+        <div className="h-screen flex-col flex items-center justify-center gap-4">
+          <p className="text-gray-600">Please verify your email first and then refresh the page to continue.</p>
+          <RefreshButton />
+        </div>
+      );
         }
       }
     }
 
     // ✅ Traveller flow — show verification screen if pending
-    if (profile?.status === "pending" && role === "traveller") {
+    if (profile?.status === "pending" || role === "traveller") {
       <div className="h-screen flex-col flex items-center justify-center">
         <p>Please verify your email first and then refresh the page</p>;
       </div>;
       return;
     }
 
-    // ✅ Default return (active profile, companion, or hq)
+    // ✅ Default return (active profile, companion, or traveller)
     return <DashboardClient user={user} profile={profile} role={role} />;
   }
 

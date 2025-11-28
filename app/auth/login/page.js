@@ -1,246 +1,3 @@
-// "use client";
-// import { useState, useEffect } from "react";
-// import { supabase } from "@/libs/supabaseClient";
-// import { useRouter, useSearchParams } from "next/navigation";
-// import Card from "@/components/common/Card";
-
-// export default function Login() {
-//   const [email, setEmail] = useState("");
-//   const [role, setRole] = useState("traveller");
-//   const [message, setMessage] = useState("");
-//   const [loading, setLoading] = useState(false);
-//   const [checkingSession, setCheckingSession] = useState(true);
-//   const router = useRouter();
-//   const searchParams = useSearchParams();
-
-//   useEffect(() => {
-//     // ✅ Check for auth errors in URL parameters first
-//     const checkAuthErrors = () => {
-//       const error = searchParams.get('error');
-//       const errorCode = searchParams.get('error_code');
-//       const errorDescription = searchParams.get('error_description');
-
-//       const hasQueryError =
-//         error === 'access_denied' ||
-//         errorCode === 'otp_expired' ||
-//         errorDescription?.includes('expired') ||
-//         errorDescription?.includes('invalid');
-
-//       // ✅ Check hash fragments (client-side only)
-//       let hasHashError = false;
-//       if (typeof window !== 'undefined') {
-//         const hashParams = new URLSearchParams(window.location.hash.substring(1));
-//         hasHashError =
-//           hashParams.get('error') === 'access_denied' ||
-//           hashParams.get('error_code') === 'otp_expired' ||
-//           hashParams.get('error_description')?.includes('expired');
-//       }
-
-//       console.log('Login page auth error check:', {
-//         hasQueryError,
-//         hasHashError
-//       });
-
-//       // ✅ If any auth errors detected, show appropriate message
-//       if (hasQueryError || hasHashError) {
-//         setMessage("Your magic link has expired. Please request a new one.");
-
-//         // Clear the current URL to remove error parameters
-//         const cleanUrl = window.location.pathname;
-//         window.history.replaceState(null, '', cleanUrl);
-//       }
-//     };
-
-//     const checkSession = async () => {
-//       // Check for auth errors before checking session
-//       checkAuthErrors();
-
-//       const {
-//         data: { session },
-//       } = await supabase.auth.getSession();
-
-//       if (session?.user) {
-//         const { data: profile } = await supabase
-//           .from("users")
-//           .select("*")
-//           .eq("id", session.user.id)
-//           .single();
-
-//         if (profile) {
-//           router.push("/dashboard");
-//         }
-//       }
-//       setCheckingSession(false);
-//     };
-
-//     checkSession();
-
-//     const {
-//       data: { subscription },
-//     } = supabase.auth.onAuthStateChange(async (event, session) => {
-//       if (event === "SIGNED_IN" && session?.user) {
-//         const { data: profile } = await supabase
-//           .from("users")
-//           .select("*")
-//           .eq("id", session.user.id)
-//           .single();
-
-//         if (profile) router.push("/dashboard");
-//       }
-//     });
-
-//     return () => subscription.unsubscribe();
-//   }, [router, searchParams]);
-
-//   const handleLogin = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     setMessage("");
-
-//     const { error } = await supabase.auth.signInWithOtp({
-//       email,
-//       options: {
-//         emailRedirectTo: `http://localhost:3000/dashboard?role=${role}`,
-//       },
-//     });
-
-//     if (error) {
-//       setMessage(error.message);
-//     } else {
-//       setMessage("Check your email for the login link!");
-//     }
-//     setLoading(false);
-//   };
-
-//   if (checkingSession) {
-//     return (
-//       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-//         <div className="text-center">
-//           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d9fd8] mx-auto"></div>
-//           <p className="mt-4 text-gray-600">Checking authentication...</p>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-//       <Card className="max-w-md w-full overflow-hidden">
-//         <div className="bg-[#1d9fd8] px-6 py-8 rounded-[14.1px]">
-//           <h1 className="text-3xl font-bold text-white text-center">
-//             Welcome
-//           </h1>
-//           <p className="text-blue-100 text-center mt-2">
-//             Sign in to your account
-//           </p>
-//         </div>
-
-//         <div className="mt-8">
-//           <form onSubmit={handleLogin} className="space-y-6">
-//             <div>
-//               <label
-//                 htmlFor="email"
-//                 className="block text-sm font-medium text-gray-700 mb-2"
-//               >
-//                 Email Address
-//               </label>
-//               <input
-//                 id="email"
-//                 type="email"
-//                 placeholder="Enter your email address"
-//                 value={email}
-//                 onChange={(e) => setEmail(e.target.value)}
-//                 required
-//                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1d9fd8] focus:border-transparent transition duration-200"
-//               />
-//             </div>
-//             <div>
-//               <label
-//                 htmlFor="role"
-//                 className="block text-sm font-medium text-gray-700 mb-2"
-//               >
-//                 Select Role
-//               </label>
-//               <select
-//                 id="role"
-//                 value={role}
-//                 onChange={(e) => setRole(e.target.value)}
-//                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1d9fd8] focus:border-transparent transition duration-200 bg-white"
-//               >
-//                 <option value="traveller">Traveller</option>
-//                 <option value="companion">Companion</option>
-//                 <option value="admin">Admin</option>
-//               </select>
-//             </div>
-
-//             {/* Submit Button */}
-//             <button
-//               type="submit"
-//               disabled={loading}
-//               className="w-full bg-[#1d9fd8] hover:bg-[#1d9fd8] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-[#1d9fd8] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-//             >
-//               {loading ? (
-//                 <div className="flex items-center justify-center">
-//                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-//                   Sending...
-//                 </div>
-//               ) : (
-//                 "Send Magic Link"
-//               )}
-//             </button>
-//           </form>
-
-//           {/* Message */}
-//           {message && (
-//             <div
-//               className={`mt-6 p-4 rounded-lg text-center ${
-//                 message.includes("Check your email")
-//                   ? "bg-green-50 border border-green-200 text-green-700"
-//                   : message.includes("expired")
-//                   ? "bg-yellow-50 border border-yellow-200 text-yellow-700" // Different color for expired links
-//                   : "bg-red-50 border border-red-200 text-red-700"
-//               }`}
-//             >
-//               <p className="text-sm font-medium">{message}</p>
-//               {message.includes("expired") && (
-//                 <p className="text-xs mt-1 opacity-75">
-//                   Please enter your email above to get a new magic link
-//                 </p>
-//               )}
-//             </div>
-//           )}
-
-//           {/* Info Box */}
-//           <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-//             <div className="flex items-start">
-//               <div className="flex-shrink-0">
-//                 <svg
-//                   className="w-5 h-5 text-[#1d9fd8]"
-//                   fill="none"
-//                   stroke="currentColor"
-//                   viewBox="0 0 24 24"
-//                 >
-//                   <path
-//                     strokeLinecap="round"
-//                     strokeLinejoin="round"
-//                     strokeWidth="2"
-//                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-//                   ></path>
-//                 </svg>
-//               </div>
-//               <div className="ml-3">
-//                 <p className="text-sm text-[#1d9fd8]">
-//                   We'll send you a magic link to sign in. No password needed!
-//                 </p>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </Card>
-//     </div>
-//   );
-// }
-
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "@/libs/supabaseClient";
@@ -249,12 +6,13 @@ import Card from "@/components/common/Card";
 import InputField from "@/components/common/InputField";
 import Heading from "@/components/common/Heading";
 import Button from "@/components/common/Button";
+import { useError } from "@/context/ErrorContext";
 
 export default function Login() {
+  const { showError , showSuccess } = useError();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("traveller");
   const [type, setType] = useState("login"); // ✅ new state for type
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
   const router = useRouter();
@@ -299,7 +57,7 @@ export default function Login() {
       }
 
       if (hasQueryError || hasHashError) {
-        setMessage("Your magic link has expired. Please request a new one.");
+        showError("Your magic link has expired. Please request a new one.");
         const cleanUrl = window.location.pathname;
         window.history.replaceState(null, "", cleanUrl);
       }
@@ -353,12 +111,17 @@ export default function Login() {
 
   const handleTravellerSignup = async (e) => {
     e.preventDefault();
-    console.log("asdasd");
     setLoading(true);
     const { firstName, lastName, email } = travellerFields;
     if (!firstName.trim() || !lastName.trim() || !email.trim()) {
       setLoading(false);
-      alert("Please fill in all fields before submitting.");
+      showError("Please fill all fields before submitting.");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setLoading(false);
+      showError("Please enter a valid email address.");
       return;
     }
     const redirectUrl = `http://localhost:3000/dashboard?role=${role}&firstName=${encodeURIComponent(
@@ -375,13 +138,13 @@ export default function Login() {
 
     if (error) {
       setLoading(false);
-      setMessage(error.message);
+      showError(error.message);
       setTimeout(() => {
-        setMessage("");
+        showError("");
       }, 2000);
     } else {
       setLoading(false);
-      setMessage("Check your email for the login link!");
+      showSuccess("Check your email for the login link!");
     }
   };
 
@@ -389,7 +152,7 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
+    // showError("");
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -399,9 +162,11 @@ export default function Login() {
     });
 
     if (error) {
-      setMessage(error.message);
+      setLoading(false);
+      showError(error.message);
     } else {
-      setMessage("Check your email for the login link!");
+      setLoading(false);
+      showSuccess("Check your email for the login link!");
     }
     setLoading(false);
   };
@@ -466,6 +231,7 @@ export default function Login() {
                   id="email"
                   label="Email"
                   name="email"
+                  type="email"
                   value={travellerFields.email}
                   onChange={handleTravellerChange("email")}
                   placeholder="example@email.com"
@@ -475,7 +241,7 @@ export default function Login() {
               </div>
 
               {/* ✅ Show message here */}
-              {message && (
+              {/* {message && (
                 <div className="col-span-2 text-center mt-2">
                   <p
                     className={`text-sm ${
@@ -487,7 +253,7 @@ export default function Login() {
                     {message}
                   </p>
                 </div>
-              )}
+              )} */}
 
               <div className="flex justify-end items-center col-span-2">
                 <Button
@@ -548,7 +314,7 @@ export default function Login() {
                 </button>
               </form>
 
-              {message && (
+              {/* {message && (
                 <div
                   className={`mt-6 p-4 rounded-lg text-center ${
                     message.includes("Check your email")
@@ -565,7 +331,7 @@ export default function Login() {
                     </p>
                   )}
                 </div>
-              )}
+              )} */}
 
               <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-start">

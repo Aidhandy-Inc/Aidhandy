@@ -15,10 +15,17 @@ import { useUser } from "@/context/ClientProvider";
 import AuthLogin from "@/components/common/AuthModal";
 import CompanionProfileModal from "@/components/Seat/PublicProfileCompanion";
 import Sentry from "@/sentry.client.config";
+import { useError } from "../../../context/ErrorContext";
+import ErrorMessage from "../../../components/Error/ErrorMessage";
+import ErrorModal from "@/components/common/ErrorModal";
 
 export default function FlightChecker() {
+  const { showError } = useError();
   const { user, profile } = useUser();
   const [selectedPath, setSelectedPath] = useState(null);
+  // Error Modal For No Companion List
+    const [errorOpen, setErrorOpen] = useState(false);
+  const [isCompanionListError, setIsCompanionListError] = useState(false);
   const [flightData, setFlightData] = useState({
     departure_airport: "",
     destination_airport: "",
@@ -48,11 +55,7 @@ export default function FlightChecker() {
   // ! Flight Search Handler When Not Booked
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      selectedPath === 2 &&
-      (!profile || // No profile exists
-        profile.type === "traveller") // Or profile exists and is a traveller
-    ) {
+    if (selectedPath === 2 && (!profile || profile.type === "traveller")) {
       setSubmitting(true);
       try {
         const travelDate = new Date(
@@ -60,29 +63,30 @@ export default function FlightChecker() {
         )
           .toISOString()
           .split("T")[0];
-
         if (!travelDate) {
-          console.warn("⚠️ Missing departure date in flightData");
+          showError("Missing departure date in flightData");
           setSubmitting(false);
           return;
         }
-
         // ✅ Fetch companions with their flight data
         const { data: companions, error } = await supabase
           .from("bookings")
           .select("*")
           .eq("departure_iata", flightData.departure_airport)
-          .eq("destination_iata", flightData.destination_airport)
+          // .eq("destination_iata", flightData.destination_airport)
           .eq("departure_date", travelDate);
 
         if (error) {
-          console.log("❌ Error fetching companions:", error);
+          showError("❌ Error fetching companions:", error);
           setSubmitting(false);
           return;
         }
 
         if (!companions || companions.length === 0) {
-          console.log("⚠️ No matching companions found");
+           setSubmitting(false);
+          setErrorOpen(true);
+          setIsCompanionListError(true);
+          // showError("No matching companions found");
           setSubmitting(false);
           return;
         }
@@ -95,13 +99,13 @@ export default function FlightChecker() {
               await supabase
                 .from("companions")
                 .select(
-                  "full_name, email, phone, profile_photo_url, gender, languages, short_bio"
+                  "first_name, last_name, email, phone, profile_photo_url, gender, languages, short_bio"
                 )
-                .eq("user_id", companion.traveler_id) // Changed from 'id' to 'user_id'
+                .eq("user_id", companion.traveler_id)
                 .single();
 
             if (companionError) {
-              console.log(
+              showError(
                 `❌ Error fetching companion profile for ${companion.traveler_id}:`,
                 companionError
               );
@@ -131,7 +135,7 @@ export default function FlightChecker() {
           return;
         }
       } catch (err) {
-        console.log("Unexpected error fetching companions:", err);
+        showError("Unexpected error fetching companions:", err);
         setSubmitting(false);
         return;
       }
@@ -732,6 +736,14 @@ export default function FlightChecker() {
               setIsAuthModalOpen={setIsAuthModalOpen}
             />
           </>
+        )}
+
+        {isCompanionListError && (
+          <ErrorModal
+            open={errorOpen}
+            message="No Companions found for this date. Try some other dates"
+            onClose={() => setErrorOpen(false)}
+          />
         )}
       </div>
     </>

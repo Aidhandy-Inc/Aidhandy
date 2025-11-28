@@ -6,6 +6,8 @@ import Header from "@/components/common/Header";
 import { getUserAndProfile } from "@/libs/getUserData";
 import { ClientProvider } from "@/context/ClientProvider";
 import HeaderWrapper from "@/components/layout/HeaderWrapper";
+import { ErrorProvider } from "@/context/ErrorContext";
+import ToastProvider from "@/components/Error/ErrorMessage";
 
 export const metadata = {
   title: "AidHandy App",
@@ -25,20 +27,25 @@ export default async function RootLayout({ children }) {
         <title>{metadata.title}</title>
       </head>
       <body className="antialiased bg-gray-50 text-gray-900">
-         {/* ✅ Header gets server-side profile directly */}
-         <HeaderWrapper profile={profile} />
+        {/* ✅ Header gets server-side profile directly */}
+        <HeaderWrapper profile={profile} />
         <Providers>
-          
-        {/* ✅ Make data globally available to all client components */}
-        <ClientProvider user={user} profile={profile}>
-          <Sentry.ErrorBoundary
-            fallback={<p>Something went wrong. Our team has been notified.</p>}
-          >
-            {/* <AuthProvider> */}
-              {/* <Header /> */}
-              {children}
-            {/* </AuthProvider> */}
-          </Sentry.ErrorBoundary>
+          {/* ✅ Make data globally available to all client components */}
+
+          <ClientProvider user={user} profile={profile}>
+            <ErrorProvider>
+              <ToastProvider />
+              <Sentry.ErrorBoundary
+                fallback={
+                  <p>Something went wrong. Our team has been notified.</p>
+                }
+              >
+                {/* <AuthProvider> */}
+                {/* <Header /> */}
+                {children}
+                {/* </AuthProvider> */}
+              </Sentry.ErrorBoundary>
+            </ErrorProvider>
           </ClientProvider>
         </Providers>
       </body>

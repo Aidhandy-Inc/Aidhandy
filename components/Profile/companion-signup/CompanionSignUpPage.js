@@ -14,6 +14,7 @@ import Heading from "@/components/common/Heading";
 import { supabase } from "@/libs/supabaseClient";
 // import { sendCompanionOnboardingEmail } from "@/app/actions/email-actions";
 import YellowLoader from "@/components/common/Loader";
+import { setErrorsWithAutoDismiss } from "@/utils/dismiss-errors";
 
 export default function CompanionSignUpPage({ email , profile }) {
   const STEPS = useMemo(
@@ -118,7 +119,8 @@ export default function CompanionSignUpPage({ email , profile }) {
     const validators = {
       basics: () => {
         const errs = validateBasics();
-        setErrors(errs);
+         setErrorsWithAutoDismiss(errs , setErrors);
+        // setErrors(errs);
         return Object.keys(errs).length === 0;
       },
       bio: () => {
@@ -126,7 +128,8 @@ export default function CompanionSignUpPage({ email , profile }) {
         const errs = {};
 
         if (!bio.shortBio?.trim()) errs.shortBio = "Short bio is required";
-        setErrors(errs);
+          setErrorsWithAutoDismiss(errs , setErrors);
+        // setErrors(errs);
         return Object.keys(errs).length === 0;
       },
       services: () => {
@@ -139,7 +142,8 @@ export default function CompanionSignUpPage({ email , profile }) {
           errs.preferredAirports = "Select at least one Airport";
         if (!services.languages.length)
           errs.languages = "Select at least one Language";
-        setErrors(errs);
+          setErrorsWithAutoDismiss(errs , setErrors);
+        // setErrors(errs);
         return Object.keys(errs).length === 0;
       },
     };

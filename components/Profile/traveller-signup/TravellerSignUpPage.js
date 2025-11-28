@@ -10,10 +10,13 @@ import { supabase } from "@/libs/supabaseClient";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/common/Loader";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { setErrorsWithAutoDismiss } from "@/utils/dismiss-errors";
+import { useError } from "@/context/ErrorContext";
 
 export default function TravellerSignUpPage({ email, user, profile }) {
-  const router = useRouter();
+  const {  showError , showSuccess} = useError();
   const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -133,7 +136,8 @@ export default function TravellerSignUpPage({ email, user, profile }) {
     const validators = {
       basics: () => {
         const errs = validateBasics();
-        setErrors(errs);
+        setErrorsWithAutoDismiss(errs, setErrors);
+
         return Object.keys(errs).length === 0;
       },
     };
@@ -183,7 +187,7 @@ export default function TravellerSignUpPage({ email, user, profile }) {
         data: { session },
       } = await supabase.auth.getSession();
 
-      console.log("🪪 Session for mutation:", session);
+      setIsLoading(true);
       const saveResult = await supabase.functions.invoke(
         "save-traveller-data-on-signup",
         {
@@ -197,24 +201,27 @@ export default function TravellerSignUpPage({ email, user, profile }) {
         }
       );
 
-      console.log("🧩 Save traveller result:", saveResult);
+      if (saveResult.error) {
+        setIsLoading(false);
+        showError(saveResult.error.message || "Function error");
+      }
 
-      if (saveResult.error)
-        throw new Error(saveResult.error.message || "Function error");
-
-      if (!saveResult.data?.success)
-        throw new Error(saveResult.data?.error || "Function unsuccessful");
+      if (!saveResult.data?.success) {
+        setIsLoading(false);
+        showError(saveResult.data?.error || "Function unsuccessful");
+      }
 
       return saveResult.data;
     },
     onSuccess: (data) => {
+      setIsLoading(false);
       queryClient.invalidateQueries(["traveller", user?.id]);
-      console.log("✅ Traveller data saved successfully:", data);
-      router.push("/dashboard");
+      showSuccess("Profile updated successfully");
+      // router.push("/dashboard");
     },
     onError: (error) => {
       console.error("❌ Failed to save traveller data:", error);
-      alert(`Failed to save data: ${error.message}`);
+      showError(`Failed update profile: ${error.message}`);
     },
   });
 
@@ -247,68 +254,73 @@ export default function TravellerSignUpPage({ email, user, profile }) {
   const isEditing = !!existingTraveller;
 
   return (
-    <div className="min-h-screen flex items-start justify-center mt-3">
-      <Card className={"max-w-7xl "}>
-        <form className="w-full relative">
-          <header className="mb-6 text-center">
-            <Heading
-              title={
-                isEditing ? "Update Traveller Profile" : "Traveller Sign Up"
-              }
-              className="text-4xl font-extrabold text-slate-900"
-            />
-            {/* {isEditing && (
+    <>
+      {isLoading && <Loader />}
+      <div className="min-h-screen flex items-start justify-center mt-3">
+        <Card className={"max-w-7xl "}>
+          <form className="w-full relative">
+            <header className="mb-6 text-center">
+              <Heading
+                title={
+                  isEditing ? "Update Traveller Profile" : "Traveller Sign Up"
+                }
+                className="text-4xl font-extrabold text-slate-900"
+              />
+              {/* {isEditing && (
               <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
                 <p className="text-blue-700 font-medium">
                   📝 You're updating your existing profile
                 </p>
               </div>
             )} */}
-            {email && (
-              <p className="text-slate-600 mt-2">
-                Signed in as: <strong>{email}</strong>
-              </p>
-            )}
-          </header>
+              {email && (
+                <p className="text-slate-600 mt-2">
+                  Signed in as: <strong>{email}</strong>
+                </p>
+              )}
+            </header>
 
-          <section className="grid grid-cols-1 gap-6 items-start">
-            <div className="md:col-span-1 flex items-center justify-center gap-4 flex-wrap">
-              <ProfilePhoto value={profilePhoto} onChange={setProfilePhoto} />
-              <p className="text-center block text-red-500">
-                {errors && errors?.profilePhoto}
-              </p>
-            </div>
+            <section className="grid grid-cols-1 gap-6 items-start">
+              <div className="md:col-span-1 flex items-center justify-center gap-4 flex-wrap">
+                <ProfilePhoto value={profilePhoto} onChange={setProfilePhoto} />
+                <p className="text-center block text-red-500">
+                  {errors && errors?.profilePhoto}
+                </p>
+              </div>
 
-            <TravellerSignup
-              profile={profile}
-              form={formData.basics}
-              update={(field, value) => updateFormData("basics", field, value)}
-              errors={errors}
-              emailFromProps={email}
-            />
+              <TravellerSignup
+                profile={profile}
+                form={formData.basics}
+                update={(field, value) =>
+                  updateFormData("basics", field, value)
+                }
+                errors={errors}
+                emailFromProps={email}
+              />
 
-            <div className={`mt-8 flex items-center justify-end w-full`}>
-              <PrimaryButton
-                onClick={handleButtonClick}
-                disabled={isSubmitting || saveTravellerMutation.isLoading}
-              >
-                {saveTravellerMutation.isLoading ? (
-                  <span className="flex items-center">
-                    <Loader size="sm" />
-                    <span className="ml-2">
-                      {isEditing ? "Updating..." : "Saving..."}
+              <div className={`mt-8 flex items-center justify-end w-full`}>
+                <PrimaryButton
+                  onClick={handleButtonClick}
+                  disabled={isSubmitting || saveTravellerMutation.isLoading}
+                >
+                  {saveTravellerMutation.isLoading ? (
+                    <span className="flex items-center">
+                      <Loader size="sm" />
+                      <span className="ml-2">
+                        {isEditing ? "Updating..." : "Saving..."}
+                      </span>
                     </span>
-                  </span>
-                ) : isEditing ? (
-                  "Update Profile"
-                ) : (
-                  "Save Profile"
-                )}
-              </PrimaryButton>
-            </div>
-          </section>
-        </form>
-      </Card>
-    </div>
+                  ) : isEditing ? (
+                    "Update Profile"
+                  ) : (
+                    "Save Profile"
+                  )}
+                </PrimaryButton>
+              </div>
+            </section>
+          </form>
+        </Card>
+      </div>
+    </>
   );
 }

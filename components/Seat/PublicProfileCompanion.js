@@ -53,7 +53,7 @@ const CompanionProfileModal = ({
                     companion.profile?.profile_photo_url ||
                     "/default-avatar.png"
                   }
-                  alt={companion.profile?.full_name || "Unknown Traveler"}
+                  alt={companion.profile?.first_name || "Unknown Traveler"}
                   className={`w-24 h-24 rounded-full object-cover border-2 border-blue-100 mb-4 ${
                     isBlurred ? "blur" : ""
                   }`}
@@ -61,12 +61,39 @@ const CompanionProfileModal = ({
 
                 {/* Full Name */}
                 <h3 className="text-lg font-semibold">
-                  {isBlurred
-                    ? companion.profile?.full_name
-                        ?.split(" ")
-                        .map((word) => word[0] + "*".repeat(word.length - 1))
-                        .join(" ") || "*****"
-                    : companion.profile?.full_name || "Unknown Traveler"}
+                  {(() => {
+                    const firstName = companion.profile?.first_name;
+                    const lastName = companion.profile?.last_name;
+
+                    // If both names are missing
+                    if (!firstName && !lastName) {
+                      return isBlurred ? "*****" : "Unknown Traveler";
+                    }
+
+                    // If data is already blurred, show as is
+                    if (
+                      (firstName && firstName.includes("*")) ||
+                      (lastName && lastName.includes("*"))
+                    ) {
+                      return [firstName, lastName]
+                        .filter((name) => name)
+                        .join(" ");
+                    }
+
+                    // Apply blurring if needed
+                    if (isBlurred) {
+                      return [firstName, lastName]
+                        .filter((name) => name)
+                        .map((name) => name[0] + "*".repeat(name.length - 1))
+                        .join(" ");
+                    }
+
+                    // Show normal names
+                    return (
+                      [firstName, lastName].filter((name) => name).join(" ") ||
+                      "Unknown Traveler"
+                    );
+                  })()}
                 </h3>
 
                 {/* Languages */}

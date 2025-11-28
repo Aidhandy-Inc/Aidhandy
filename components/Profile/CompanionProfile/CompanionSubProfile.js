@@ -3,21 +3,16 @@ import EmailVerification from "../companion-signup/EmailOTP";
 import PhoneInput2 from "../companion-signup/PhoneOTP";
 import MultiSelectField from "@/components/common/MultiSelectField";
 
-const TravellerSignup = ({ form, update, errors, emailFromProps, profile }) => {
-  // Handle change for single-value fields
+const CompanionSubProfile = ({
+  form,
+  update,
+  errors,
+  emailFromProps,
+  profile,
+}) => {
   const handleChange = (fieldName) => (e) => {
     update(fieldName, e.target.value);
   };
-
-  // ✅ Handle multiple selection for arrays
-  const handleMultiSelectChange = (fieldName) => (e) => {
-    const selected = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    update(fieldName, selected);
-  };
-
   return (
     <div className="space-y-6">
       {/* ✅ Name Fields */}
@@ -78,6 +73,36 @@ const TravellerSignup = ({ form, update, errors, emailFromProps, profile }) => {
         />
       </div>
       <div>
+        <InputField
+          id="dob"
+          label="Date of birth"
+          name="dob"
+          type="date"
+          value={form.dob}
+          onChange={handleChange("dob")}
+          placeholder=""
+          required={true}
+        />
+        {errors.dob && (
+          <p className="text-rose-600 text-sm mt-1">{errors.dob}</p>
+        )}
+      </div>
+      {/* <div>KYC Status {form.is_kyc_approved}</div> */}
+      <div>
+        <InputField
+          id="shortbio"
+          label="Short Bio"
+          name="shortbio"
+          value={form.short_bio}
+          onChange={handleChange("short_bio")}
+          placeholder=""
+          required={true}
+        />
+        {errors.short_bio && (
+          <p className="text-rose-600 text-sm mt-1">{errors.short_bio}</p>
+        )}
+      </div>
+      <div>
         {" "}
         <label
           htmlFor="gender"
@@ -115,56 +140,97 @@ const TravellerSignup = ({ form, update, errors, emailFromProps, profile }) => {
           options={[
             { value: "English", label: "English" },
             { value: "Spanish", label: "Spanish" },
-            // { value: "Urdu", label: "Urdu" },
-            // { value: "Arabic", label: "Arabic" },
-            // { value: "French", label: "French" },
           ]}
-          value={form.language}
+          value={
+            Array.isArray(form.language)
+              ? form.language.map(
+                  (lang) =>
+                    lang.charAt(0).toUpperCase() + lang.slice(1).toLowerCase()
+                )
+              : form.language
+              ? [
+                  form.language.charAt(0).toUpperCase() +
+                    form.language.slice(1).toLowerCase(),
+                ]
+              : []
+          }
           onChange={(vals) => update("language", vals)}
           error={errors.language}
         />
-
         <MultiSelectField
-          id="specialNeeds"
+          id="language"
           label={
             <>
-              Special Assistance <span className="text-rose-500">*</span>
+              Service Type <span className="text-rose-500">*</span>
             </>
           }
           options={[
-            { value: "Wheelchair Access", label: "Mobility" },
             {
-              value: "Hearing Assistance",
-              label: "Visual (low vision or blind)",
+              value: "bording",
+              label: "Boarding Help",
             },
             {
-              value: "Visual Assistance",
-              label: "Hearing (deaf or hard of hearing)",
+              value: "child",
+              label: "Child Support",
             },
-            { value: "Medical Support", label: "Elderly Support" },
             {
-              value: "Travelling with children",
-              label: "Travelling with children",
+              value: "aid",
+              label: "Mobility Aid",
             },
-            { value: "Medical condition", label: "Medical condition" },
             {
-              value: "Cognitive / development support",
-              label: "Cognitive / development support",
+              value: "baggage",
+              label: "Baggage Claim",
             },
-            { value: "Language assistance", label: "Language assistance" },
             {
-              value: "Heavy luggage / transfer",
-              label: "Heavy luggage / transfer",
+              value: "elderly",
+              label: "Elderly Assistance",
             },
-            { value: "Other", label: "Other" },
+            {
+              value: "anxious",
+              label: "Anxious Traveler Support",
+            },
           ]}
-          value={form.specialNeeds}
-          onChange={(vals) => update("specialNeeds", vals)}
-          error={errors.specialNeeds}
+          value={
+            Array.isArray(form.service_types)
+              ? form.service_types
+              : form.service_types
+              ? [form.service_types]
+              : []
+          }
+          onChange={(vals) => update("service_types", vals)}
+          error={errors.service_types}
+        />
+
+        <MultiSelectField
+          id="preferred_airports"
+          label={
+            <>
+              Preferred Airports <span className="text-rose-500">*</span>
+            </>
+          }
+          options={[
+            { value: "jfk", label: "JFK - New York" },
+            { value: "lax", label: "LAX - Los Angeles" },
+            { value: "ord", label: "ORD - Chicago" },
+            { value: "dfw", label: "DFW - Dallas" },
+            { value: "sfo", label: "SFO - San Francisco" },
+            { value: "mia", label: "MIA - Miami" },
+            { value: "sea", label: "SEA - Seattle" },
+            { value: "bos", label: "BOS - Boston" },
+          ]}
+          value={
+            Array.isArray(form.preferred_airports)
+              ? form.preferred_airports
+              : form.preferred_airports
+              ? [form.preferred_airports]
+              : []
+          }
+          onChange={(vals) => update("preferred_airports", vals)}
+          error={errors.preferred_airports}
         />
       </div>
     </div>
   );
 };
 
-export default TravellerSignup;
+export default CompanionSubProfile;
