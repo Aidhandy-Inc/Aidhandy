@@ -7,6 +7,11 @@
     { "source": "/terms", "destination": "/terms.html" },
     { "source": "/messaging-terms", "destination": "/messaging-terms.html" },
     { "source": "/thankyou", "destination": "/thankyou.html" },
+    { "source": "/favicon.ico", "destination": "/favicon.ico" },
+    { "source": "/favicon-96x96.png", "destination": "/favicon-96x96.png" },
+    { "source": "/favicon.svg", "destination": "/favicon.svg" },
+    { "source": "/apple-touch-icon.png", "destination": "/apple-touch-icon.png" },
+    { "source": "/site.webmanifest", "destination": "/site.webmanifest" },
 
     { "source": "/(.*)", "destination": "/nextapp/$1" }
   ]
