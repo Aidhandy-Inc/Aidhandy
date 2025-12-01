@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams , useRouter } from "next/navigation";
 import { supabase } from "@/libs/supabaseClient";
 
 export default function FlightSuccess() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const session_id = searchParams.get("session_id");
   const [status, setStatus] = useState("Processing your booking...");
 
@@ -167,6 +168,7 @@ export default function FlightSuccess() {
               : "")
         );
         setStatus("🎉 Booking completed successfully!");
+        router.push("/dashboard/Booked-Flights");
 
         // 🧹 Optional cleanup
         localStorage.removeItem("pendingBooking");

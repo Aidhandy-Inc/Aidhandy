@@ -4,6 +4,8 @@ import { getUserAndProfile } from "@/libs/getUserData";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import RefreshButton from "@/components/RefreshButton";
+import { redirect } from "next/navigation";
+
 
 export default async function Page(props) {
   const searchParams = await props.searchParams;
@@ -20,7 +22,6 @@ export default async function Page(props) {
     searchParams?.token_hash;
 
   if (hasMagicLinkParams) {
-    // 🔄 Temporarily render handler component
     return <MagicLinkHandler />;
   }
 
@@ -39,6 +40,7 @@ export default async function Page(props) {
 
   // ✅ Step 2: Fetch user & profile
   const { user, profile: existingProfile } = await getUserAndProfile();
+  console.log("user and profile", user, existingProfile);
 
   // ✅ Step 3: Handle completely public visitors (no role, no magic link)
   if (!role && !searchParams?.value && !user) {
@@ -47,10 +49,11 @@ export default async function Page(props) {
 
   // ✅ Step 4: If magic link / query params are present → continue existing flow
   if (role) {
+    console.log("role from query params", role);
     let profile = existingProfile;
+    console.log("existing profile", existingProfile);
     // ✅ Create profile if not exists
     if (!profile && role) {
-      console.log("no profile present");
       const { data: newProfile, error: insertError } = await supabase
         .from("users")
         .insert([
@@ -73,11 +76,16 @@ export default async function Page(props) {
         console.error("Error inserting user:", insertError);
       } else {
         profile = newProfile;
+        if (profile && profile.role === "companion")
+        {
+          redirect("/dashboard");
+        }
+        
       }
     }
 
     // ✅ Traveller-specific logic (keep your existing code intact)
-    if (profile?.role === "traveller" && firstName && lastName && email) {  
+    if (profile?.role === "traveller" && firstName && lastName && email) {
       const { data: existingTraveller } = await supabase
         .from("travellers")
         .select("id")
@@ -110,12 +118,15 @@ export default async function Page(props) {
           });
 
           // Return the refresh message component
-      return (
-        <div className="h-screen flex-col flex items-center justify-center gap-4">
-          <p className="text-gray-600">Please verify your email first and then refresh the page to continue.</p>
-          <RefreshButton />
-        </div>
-      );
+          return (
+            <div className="h-screen flex-col flex items-center justify-center gap-4">
+              <p className="text-gray-600">
+                Please verify your email first and then refresh the page to
+                continue.
+              </p>
+              <RefreshButton />
+            </div>
+          );
         }
       }
     }
@@ -131,7 +142,6 @@ export default async function Page(props) {
     // ✅ Default return (active profile, companion, or traveller)
     return <DashboardClient user={user} profile={profile} role={role} />;
   }
-
   // ✅ Step 5: Fallback for public visitor (safe)
   return <DashboardClient user={user} profile={existingProfile} role={role} />;
 }

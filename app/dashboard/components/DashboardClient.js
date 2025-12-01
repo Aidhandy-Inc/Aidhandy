@@ -48,7 +48,6 @@ export default function DashboardClient({ user, profile }) {
 
       return false;
     };
-
     if (profile && user) {
       setProfileComplete(profile.status === "active");
     }
@@ -60,7 +59,6 @@ export default function DashboardClient({ user, profile }) {
       return () => clearTimeout(timer);
     }
   }, [profile, user, router, searchParams]);
-
   // ✅ Keep your loader and error flow
   if (isLoading) return <LoadingState />;
   return (

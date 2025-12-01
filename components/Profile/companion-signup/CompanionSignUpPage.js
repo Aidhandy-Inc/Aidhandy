@@ -286,7 +286,7 @@ export default function CompanionSignUpPage({ email , profile }) {
             companionData: {
              id: saveResult.data.companionData.id,
               email: email,
-              fullName: formData.basics.fullName,
+              fullName: formData.basics.firstName + " " + formData.basics.lastName,
               phone: formattedPhone,
             },
           },
