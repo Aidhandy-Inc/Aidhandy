@@ -9,7 +9,7 @@ import Button from "@/components/common/Button";
 import { useError } from "@/context/ErrorContext";
 
 export default function Login() {
-  const { showError , showSuccess } = useError();
+  const { showError, showSuccess } = useError();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("traveller");
   const [type, setType] = useState("login"); // ✅ new state for type
@@ -124,7 +124,10 @@ export default function Login() {
       showError("Please enter a valid email address.");
       return;
     }
-    const redirectUrl = `http://localhost:3000/dashboard?role=${role}&firstName=${encodeURIComponent(
+    const BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+    // Build dynamic redirect URL
+    const redirectUrl = `${BASE_URL}/dashboard?role=${role}&firstName=${encodeURIComponent(
       firstName
     )}&lastName=${encodeURIComponent(lastName)}&email=${encodeURIComponent(
       email
@@ -154,10 +157,12 @@ export default function Login() {
     setLoading(true);
     // showError("");
 
+    const BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    // Send OTP with redirect
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `http://localhost:3000/dashboard?role=${role}`,
+        emailRedirectTo: `${BASE_URL}/dashboard?role=${role}`,
       },
     });
 
