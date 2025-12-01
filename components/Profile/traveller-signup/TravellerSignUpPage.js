@@ -14,7 +14,7 @@ import { setErrorsWithAutoDismiss } from "@/utils/dismiss-errors";
 import { useError } from "@/context/ErrorContext";
 
 export default function TravellerSignUpPage({ email, user, profile }) {
-  const {  showError , showSuccess} = useError();
+  const { showError, showSuccess } = useError();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
@@ -217,7 +217,9 @@ export default function TravellerSignUpPage({ email, user, profile }) {
       setIsLoading(false);
       queryClient.invalidateQueries(["traveller", user?.id]);
       showSuccess("Profile updated successfully");
-      // router.push("/dashboard");
+      setTimeout(() => {
+        window.location.href = "/dashboard/profile?refresh=" + Date.now();
+      }, 500);
     },
     onError: (error) => {
       console.error("❌ Failed to save traveller data:", error);

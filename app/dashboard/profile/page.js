@@ -3,6 +3,8 @@ import CompanionProfilePage from "@/components/Profile/CompanionProfile/Companio
 import TravellerSignUpPage from "@/components/Profile/traveller-signup/TravellerSignUpPage";
 import { useUser } from "@/context/ClientProvider";
 
+export const dynamic = "force-dynamic";
+
 export default function ProfilePage() {
   const { user, profile } = useUser();
   return (
