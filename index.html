@@ -5,18 +5,16 @@
   <title>AidHandy — Travel Assistance, Simplified</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="AidHandy is a U.S.-based marketplace connecting travelers with vetted companions for calm, respectful airport and in-flight support." />
+  <meta name="description" content="AidHandy is a U.S.-based marketplace connecting travelers with vetted companions for calm, respectful airport and in-flight support. Book safely. Travel easier." />
   <meta name="theme-color" content="#1D9FD8" />
   <link rel="canonical" href="https://www.aidhandy.com/" />
 
-  <!-- Favicons -->
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
 
-  <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -111,6 +109,10 @@
     /* Sections */
     section {
       padding: 96px 0;
+    }
+    
+    #book.section { /* Custom padding for the dedicated form section */
+        padding: 48px 0;
     }
 
     .soft-section {
@@ -213,6 +215,10 @@
       transform:translateY(-3px);
       box-shadow:0 14px 40px rgba(2,8,23,0.08);
     }
+    
+    .card.shadow { /* Re-using the shadow style from the second file */
+        box-shadow: 0 6px 24px rgba(2,8,23,0.06);
+    }
 
     .card h2 {
       margin-top:0;
@@ -247,7 +253,7 @@
       margin-top:10px;
     }
 
-    /* Modal */
+    /* Modal (from first file) */
     .modal {
       position:fixed;
       inset:0;
@@ -330,7 +336,6 @@
     }
   </style>
 
-  <!-- Meta Pixel -->
   <script>
     !function(f,b,e,v,n,t,s){
       if(f.fbq)return;
@@ -347,13 +352,18 @@
     fbq('init','1195389679143314');
     fbq('track','PageView');
   </script>
+  
+  <noscript>
+    <img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1195389679143314&ev=PageView&noscript=1"/>
+  </noscript>
 </head>
 
 <body>
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href="/">
+    <a class="brand" href="/" aria-label="AidHandy Home">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
         <path d="M2 12h20" stroke="#1D9FD8" stroke-width="2" stroke-linecap="round"/>
         <path d="M6 8l4 4-4 4" stroke="#FF7A00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -381,7 +391,7 @@
       airport navigation and in-flight reassurance.
     </p>
     <div class="cta">
-      <a class="btn btn-primary" href="javascript:void(0)" onclick="openRegister()">Join the companion network</a>
+      <a class="btn btn-primary" href="#book">Join the companion network</a> 
       <a class="btn btn-ghost" href="/privacy-policy.html">Privacy-first operations</a>
     </div>
   </div>
@@ -389,14 +399,14 @@
 
 <section id="how" class="soft-section">
   <div class="wrap grid">
-    <div class="card">
+    <div class="card shadow">
       <h2>For Travelers</h2>
       <p>
         Book on-demand support for airport navigation, gate changes,
         boarding assistance, and calm in-flight reassurance.
       </p>
     </div>
-    <div class="card">
+    <div class="card shadow">
       <h2>For Companions</h2>
       <p>
         Offer light, non-medical assistance on your schedule.
@@ -419,6 +429,33 @@
   </div>
 </section>
 
+<section id="book" class="section">
+  <div class="wrap grid">
+    <div class="card shadow" style="grid-column: span 7;">
+      <h2>Join as a Companion</h2>
+      <p>Become part of the AidHandy companion network. Fill out the early signup form below.</p>
+
+      <iframe 
+        src="https://docs.google.com/forms/d/e/1FAIpQLSfS955PSpGmBXbM7xUatap6uERhr8_rEs5Bj4TgJ-Fy-Pjd3w/viewform?embedded=true"
+        width="100%" height="2000" frameborder="0" marginheight="0" marginwidth="0">
+      </iframe>
+    </div>
+
+    <div class="card" style="grid-column: span 5;">
+      <h3>What you’ll get</h3>
+      <ul>
+        <li>Launch notifications</li>
+        <li>Early access</li>
+        <li>SMS + email updates</li>
+      </ul>
+
+      <h3>Questions?</h3>
+      <p>Email: <a href="mailto:support@aidhandy.com">support@aidhandy.com</a></p>
+    </div>
+  </div>
+</section>
+
+
 </main>
 
 <footer>
@@ -432,7 +469,6 @@
   </div>
 </footer>
 
-<!-- Registration Modal -->
 <div id="registerModal" class="modal">
   <div class="modal-backdrop" onclick="closeRegister()"></div>
   <div class="modal-content">
