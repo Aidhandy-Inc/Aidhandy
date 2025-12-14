@@ -5,7 +5,7 @@
   <title>AidHandy — Travel Assistance, Simplified</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="AidHandy connects travelers with vetted companions for calm, respectful airport navigation and in-flight reassurance." />
+  <meta name="description" content="AidHandy is a U.S.-based marketplace connecting travelers with vetted companions for calm, respectful airport and in-flight support." />
   <meta name="theme-color" content="#1D9FD8" />
   <link rel="canonical" href="https://www.aidhandy.com/" />
 
@@ -200,24 +200,13 @@
     }
 
     .card {
-      grid-column: span 4;
+      grid-column: span 6;
       background: linear-gradient(180deg,#ffffff,#f9fafb);
       border:1px solid var(--ah-border);
       border-radius:20px;
-      padding:28px;
+      padding:32px;
       position:relative;
       transition:transform .2s ease, box-shadow .2s ease;
-    }
-
-    .card::before {
-      content:"";
-      position:absolute;
-      inset:0;
-      border-radius:20px;
-      background:linear-gradient(180deg,rgba(29,159,216,0.12),transparent 40%);
-      opacity:0;
-      transition:opacity .25s ease;
-      pointer-events:none;
     }
 
     .card:hover {
@@ -225,11 +214,7 @@
       box-shadow:0 14px 40px rgba(2,8,23,0.08);
     }
 
-    .card:hover::before {
-      opacity:1;
-    }
-
-    .card h3 {
+    .card h2 {
       margin-top:0;
     }
 
@@ -307,6 +292,39 @@
       cursor:pointer;
     }
 
+    /* Cookie */
+    .cookie {
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      background:#0b1220;
+      color:#e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+      display: none;
+      z-index: 60;
+    }
+
+    .cookie a { color:#93c5fd; text-decoration: underline; }
+
+    .cookie .actions {
+      margin-top: 8px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .cookie button {
+      cursor: pointer;
+      border:0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 600;
+    }
+
+    .cookie .ok { background:#22c55e; color:#052e12; }
+    .cookie .decline { background:#334155; color:#e5e7eb; }
+
     @media (max-width:900px) {
       .card { grid-column: span 12; }
     }
@@ -372,16 +390,18 @@
 <section id="how" class="soft-section">
   <div class="wrap grid">
     <div class="card">
-      <h3>Human support</h3>
-      <p>Real people trained for dignity, patience, and calm assistance.</p>
+      <h2>For Travelers</h2>
+      <p>
+        Book on-demand support for airport navigation, gate changes,
+        boarding assistance, and calm in-flight reassurance.
+      </p>
     </div>
     <div class="card">
-      <h3>Privacy-first</h3>
-      <p>No medical services. No sensitive health data. Ever.</p>
-    </div>
-    <div class="card">
-      <h3>Flexible & trusted</h3>
-      <p>Support when needed, where it matters most.</p>
+      <h2>For Companions</h2>
+      <p>
+        Offer light, non-medical assistance on your schedule.
+        We handle matching, notifications, and payments.
+      </p>
     </div>
   </div>
 </section>
@@ -423,6 +443,14 @@
   </div>
 </div>
 
+<div id="cookie" class="cookie">
+  We use cookies. <a href="/privacy-policy.html">Learn more</a>.
+  <div class="actions">
+    <button class="ok" onclick="localStorage.setItem('ah_cookie','1');document.getElementById('cookie').style.display='none'">Accept</button>
+    <button class="decline" onclick="localStorage.setItem('ah_cookie','0');document.getElementById('cookie').style.display='none'">Decline</button>
+  </div>
+</div>
+
 <script>
   document.getElementById('y').textContent = new Date().getFullYear();
 
@@ -441,6 +469,10 @@
 
   if (window.location.hash === '#register') {
     window.addEventListener('load', openRegister);
+  }
+
+  if (localStorage.getItem('ah_cookie') === null) {
+    document.getElementById('cookie').style.display = 'block';
   }
 </script>
 
