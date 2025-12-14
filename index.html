@@ -5,37 +5,49 @@
   <title>AidHandy — Travel Assistance, Simplified</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="AidHandy connects travelers with vetted companions for airport and in-flight support. Travel easier with confidence." />
+  <meta name="description" content="AidHandy connects travelers with vetted companions for airport navigation and in-flight reassurance. Travel easier, with confidence." />
   <meta name="theme-color" content="#1D9FD8" />
   <link rel="canonical" href="https://www.aidhandy.com/" />
 
-  <!-- FAVICONS -->
+  <!-- Favicons -->
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
 
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --ah-blue:#1D9FD8;
       --ah-orange:#FF7A00;
-      --ah-text:#333;
-      --ah-muted:#667085;
+      --ah-text:#1f2937;
+      --ah-muted:#6b7280;
       --ah-border:#e5e7eb;
+      --ah-bg:#ffffff;
+      --ah-soft:#f8fafc;
     }
 
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--ah-text);
+      background: var(--ah-bg);
       line-height: 1.6;
-      background: #fff;
     }
 
-    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+    a { color: inherit; }
 
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
     header {
       position: sticky;
       top: 0;
@@ -64,21 +76,27 @@
     nav a {
       margin-left: 18px;
       text-decoration: none;
-      color: var(--ah-text);
       font-weight: 500;
+      color: var(--ah-text);
     }
 
+    /* Buttons */
     .btn {
       padding: 12px 18px;
       border-radius: 10px;
       font-weight: 600;
       text-decoration: none;
       display: inline-block;
+      transition: all .2s ease;
     }
 
     .btn-primary {
       background: var(--ah-blue);
       color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #178ec2;
     }
 
     .btn-ghost {
@@ -87,65 +105,95 @@
       background: #fff;
     }
 
+    .btn-ghost:hover {
+      background: #f0f9ff;
+    }
+
+    /* Sections */
+    section {
+      padding: 72px 0;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--ah-border), transparent);
+      margin: 40px 0;
+    }
+
+    /* Hero */
     .hero {
-      background: linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 60%);
-      padding: 64px 0 40px;
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 70%);
       border-bottom: 1px solid var(--ah-border);
     }
 
     .badge {
+      display: inline-block;
       font-size: 12px;
       padding: 4px 10px;
       border-radius: 999px;
-      background: #ECFEFF;
+      background: #ecfeff;
       color: #0369a1;
       border: 1px solid #bae6fd;
-      display: inline-block;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     .hero h1 {
-      font-size: clamp(28px,5vw,44px);
-      margin: 0 0 14px;
+      font-size: clamp(30px, 5vw, 46px);
+      margin: 0 0 16px;
       color: #0f172a;
     }
 
     .hero p {
       font-size: 18px;
       color: var(--ah-muted);
-      margin-bottom: 24px;
+      max-width: 720px;
+      margin-bottom: 28px;
     }
 
     .cta {
       display: flex;
-      gap: 12px;
+      gap: 14px;
       flex-wrap: wrap;
     }
 
+    /* Grid / Cards */
     .grid {
       display: grid;
-      grid-template-columns: repeat(12,1fr);
-      gap: 20px;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 22px;
     }
 
     .card {
+      grid-column: span 4;
+      background: #fff;
       border: 1px solid var(--ah-border);
       border-radius: 16px;
-      padding: 20px;
-      background: #fff;
+      padding: 24px;
+      transition: transform .2s ease, box-shadow .2s ease;
     }
 
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(2,8,23,0.08);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: #0f172a;
+    }
+
+    /* Footer */
     footer {
       border-top: 1px solid var(--ah-border);
-      padding: 24px 0;
-      margin-top: 40px;
+      padding: 32px 0;
+      background: #fff;
     }
 
     footer a {
       font-size: 14px;
       color: var(--ah-muted);
       text-decoration: none;
-      margin-right: 14px;
+      margin-right: 16px;
     }
 
     .legal {
@@ -154,7 +202,7 @@
       margin-top: 8px;
     }
 
-    /* MODAL */
+    /* Modal */
     .modal {
       position: fixed;
       inset: 0;
@@ -198,6 +246,10 @@
       border: none;
       cursor: pointer;
     }
+
+    @media (max-width: 900px) {
+      .card { grid-column: span 12; }
+    }
   </style>
 
   <!-- Meta Pixel -->
@@ -233,7 +285,7 @@
       AidHandy
     </a>
     <nav>
-      <a href="#how-it-works">How it works</a>
+      <a href="#how">How it works</a>
       <a href="/contact.html">Contact</a>
       <a href="/terms.html">Terms</a>
       <a href="/privacy-policy.html">Privacy</a>
@@ -243,11 +295,15 @@
 </header>
 
 <main>
+
   <section class="hero">
     <div class="wrap">
       <span class="badge">U.S. launch · ATL · JFK · LAX</span>
       <h1>Together, every flight feels easier.</h1>
-      <p>Connecting travelers with vetted companions for airport navigation, boarding support, and in-flight reassurance.</p>
+      <p>
+        AidHandy connects travelers with vetted companions for calm, respectful
+        airport navigation and in-flight reassurance.
+      </p>
       <div class="cta">
         <a class="btn btn-primary" href="javascript:void(0)" onclick="openRegister()">Join the companion network</a>
         <a class="btn btn-ghost" href="/privacy-policy.html">Privacy-first operations</a>
@@ -255,18 +311,34 @@
     </div>
   </section>
 
-  <section id="how-it-works">
+  <section id="how">
     <div class="wrap grid">
-      <div class="card" style="grid-column: span 6;">
-        <h2>For Travelers</h2>
-        <p>On-demand assistance for check-in, gates, boarding, and calm in-flight support.</p>
+      <div class="card">
+        <h3>Human support</h3>
+        <p>Real people trained for dignity, patience, and calm assistance.</p>
       </div>
-      <div class="card" style="grid-column: span 6;">
-        <h2>For Companions</h2>
-        <p>Flexible opportunities. We handle logistics, notifications, and payments.</p>
+      <div class="card">
+        <h3>Privacy-first</h3>
+        <p>No medical services. No sensitive health data. Ever.</p>
+      </div>
+      <div class="card">
+        <h3>Flexible & trusted</h3>
+        <p>Support when needed, where it matters most.</p>
       </div>
     </div>
   </section>
+
+  <section>
+    <div class="wrap card" style="text-align:center;">
+      <h3>Designed for dignity, not dependency</h3>
+      <p style="max-width:720px;margin:0 auto;color:var(--ah-muted);">
+        AidHandy provides light, non-medical assistance focused on navigation,
+        reassurance, and comfort. Travelers stay independent.
+        Companions stay professional.
+      </p>
+    </div>
+  </section>
+
 </main>
 
 <footer>
@@ -280,7 +352,7 @@
   </div>
 </footer>
 
-<!-- REGISTRATION MODAL -->
+<!-- Registration Modal -->
 <div id="registerModal" class="modal">
   <div class="modal-backdrop" onclick="closeRegister()"></div>
   <div class="modal-content">
