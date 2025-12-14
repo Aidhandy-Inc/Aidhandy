@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>AidHandy — Companion Registration</title>
+  <title>AidHandy — Travel Assistance, Simplified</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="AidHandy connects air travelers with vetted companions. Register now to become a companion." />
+  <meta name="description" content="AidHandy connects travelers with vetted companions for airport and in-flight support. Travel easier with confidence." />
   <meta name="theme-color" content="#1D9FD8" />
   <link rel="canonical" href="https://www.aidhandy.com/" />
 
@@ -17,96 +17,215 @@
   <link rel="manifest" href="/site.webmanifest" />
 
   <style>
-    :root { --ah-blue:#1D9FD8; --ah-orange:#FF7A00; --ah-text:#333; --ah-muted:#667085; --ah-bg:#fff; --ah-border:#e5e7eb; }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color: var(--ah-text); background: var(--ah-bg); line-height: 1.6; }
-    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
-    header { border-bottom: 1px solid var(--ah-border); background: #fff; position: sticky; top: 0; z-index: 10; }
-    .nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
-    .brand { display: flex; gap: 10px; align-items: center; color: var(--ah-blue); text-decoration: none; font-weight: 700; font-size: 20px; }
-    .nav a { color: var(--ah-text); text-decoration: none; margin-left: 18px; font-weight: 500; }
-    .btn { display:inline-block; padding: 12px 18px; border-radius: 10px; text-decoration: none; font-weight: 600; }
-    .btn-primary { background: var(--ah-blue); color: #fff; }
-    .btn-ghost { background: #fff; color: var(--ah-blue); border: 2px solid var(--ah-blue); }
+    :root {
+      --ah-blue:#1D9FD8;
+      --ah-orange:#FF7A00;
+      --ah-text:#333;
+      --ah-muted:#667085;
+      --ah-border:#e5e7eb;
+    }
 
-    .hero { background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 60%); padding: 56px 0 36px; border-bottom: 1px solid var(--ah-border); }
-    .hero h1 { font-size: clamp(28px, 5vw, 44px); margin: 0 0 14px; color: #0f172a; }
-    .hero p { color: var(--ah-muted); font-size: 18px; margin: 0 0 24px; }
-    .hero .cta { display:flex; gap: 12px; flex-wrap: wrap; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      color: var(--ah-text);
+      line-height: 1.6;
+      background: #fff;
+    }
+
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+    header {
+      position: sticky;
+      top: 0;
+      background: #fff;
+      border-bottom: 1px solid var(--ah-border);
+      z-index: 10;
+    }
+
+    .nav {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--ah-blue);
+      text-decoration: none;
+    }
+
+    nav a {
+      margin-left: 18px;
+      text-decoration: none;
+      color: var(--ah-text);
+      font-weight: 500;
+    }
+
+    .btn {
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--ah-blue);
+      color: #fff;
+    }
+
+    .btn-ghost {
+      border: 2px solid var(--ah-blue);
+      color: var(--ah-blue);
+      background: #fff;
+    }
+
+    .hero {
+      background: linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 60%);
+      padding: 64px 0 40px;
+      border-bottom: 1px solid var(--ah-border);
+    }
+
+    .badge {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #ECFEFF;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px,5vw,44px);
+      margin: 0 0 14px;
+      color: #0f172a;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: var(--ah-muted);
+      margin-bottom: 24px;
+    }
+
+    .cta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12,1fr);
+      gap: 20px;
+    }
+
+    .card {
+      border: 1px solid var(--ah-border);
+      border-radius: 16px;
+      padding: 20px;
+      background: #fff;
+    }
+
+    footer {
+      border-top: 1px solid var(--ah-border);
+      padding: 24px 0;
+      margin-top: 40px;
+    }
+
+    footer a {
+      font-size: 14px;
+      color: var(--ah-muted);
+      text-decoration: none;
+      margin-right: 14px;
+    }
+
+    .legal {
+      font-size: 12px;
+      color: var(--ah-muted);
+      margin-top: 8px;
+    }
 
     /* MODAL */
-    #modal-overlay {
+    .modal {
       position: fixed;
-      top:0; left:0; right:0; bottom:0;
-      background: rgba(0,0,0,0.65);
+      inset: 0;
       display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
+      z-index: 50;
     }
-    #modal-box {
+
+    .modal.show { display: block; }
+
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(2,8,23,0.6);
+    }
+
+    .modal-content {
+      position: relative;
+      max-width: 720px;
+      height: 85vh;
+      margin: 5vh auto;
       background: #fff;
-      width: 90%;
-      max-width: 750px;
-      border-radius: 14px;
-      padding: 24px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      max-height: 90vh;
-      overflow-y: auto;
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
     }
-    #modal-box h2 {
-      margin-top: 0;
-      color: var(--ah-blue);
-      text-align: center;
+
+    .modal-content iframe {
+      flex: 1;
+      border: 0;
+      width: 100%;
     }
-    .close-btn {
-      background: #eee;
-      border-radius: 6px;
-      padding: 8px 14px;
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 26px;
+      background: none;
+      border: none;
       cursor: pointer;
-      border: 1px solid #ccc;
-      font-weight: 600;
-      display: inline-block;
-      margin-top: 12px;
     }
   </style>
 
-  <!-- Meta Pixel Code -->
+  <!-- Meta Pixel -->
   <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    !function(f,b,e,v,n,t,s){
+      if(f.fbq)return;
+      n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];
+      t=b.createElement(e);t.async=!0;
+      t.src=v;
+      s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)
+    }(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1195389679143314');
-    fbq('track', 'PageView');
+
+    fbq('init','1195389679143314');
+    fbq('track','PageView');
   </script>
-
 </head>
+
 <body>
-
-<!-- MODAL -->
-<div id="modal-overlay">
-  <div id="modal-box">
-    <h2>Become an AidHandy Companion</h2>
-
-    <iframe 
-      src="https://docs.google.com/forms/d/e/1FAIpQLSfS955PSpGmBXbM7xUatap6uERhr8_rEs5Bj4TgJ-Fy-Pjd3w/viewform?embedded=true"
-      width="100%" height="1500" frameborder="0">
-    </iframe>
-
-    <div style="text-align:center">
-      <span class="close-btn" onclick="closeModal()">Close</span>
-    </div>
-  </div>
-</div>
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href="/" aria-label="AidHandy Home">
+    <a class="brand" href="/">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
         <path d="M2 12h20" stroke="#1D9FD8" stroke-width="2" stroke-linecap="round"/>
         <path d="M6 8l4 4-4 4" stroke="#FF7A00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -118,6 +237,7 @@
       <a href="/contact.html">Contact</a>
       <a href="/terms.html">Terms</a>
       <a href="/privacy-policy.html">Privacy</a>
+      <a class="btn btn-primary" href="javascript:void(0)" onclick="openRegister()">Join as Companion</a>
     </nav>
   </div>
 </header>
@@ -126,11 +246,24 @@
   <section class="hero">
     <div class="wrap">
       <span class="badge">U.S. launch · ATL · JFK · LAX</span>
-      <h1>Welcome, Companions</h1>
-      <p>Join AidHandy’s early companion network and start earning by assisting travelers.</p>
-
+      <h1>Together, every flight feels easier.</h1>
+      <p>Connecting travelers with vetted companions for airport navigation, boarding support, and in-flight reassurance.</p>
       <div class="cta">
-        <a class="btn btn-primary" onclick="openModal()">Register Now</a>
+        <a class="btn btn-primary" href="javascript:void(0)" onclick="openRegister()">Join the companion network</a>
+        <a class="btn btn-ghost" href="/privacy-policy.html">Privacy-first operations</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="how-it-works">
+    <div class="wrap grid">
+      <div class="card" style="grid-column: span 6;">
+        <h2>For Travelers</h2>
+        <p>On-demand assistance for check-in, gates, boarding, and calm in-flight support.</p>
+      </div>
+      <div class="card" style="grid-column: span 6;">
+        <h2>For Companions</h2>
+        <p>Flexible opportunities. We handle logistics, notifications, and payments.</p>
       </div>
     </div>
   </section>
@@ -147,21 +280,39 @@
   </div>
 </footer>
 
+<!-- REGISTRATION MODAL -->
+<div id="registerModal" class="modal">
+  <div class="modal-backdrop" onclick="closeRegister()"></div>
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeRegister()">×</button>
+    <h2>Join as a Companion</h2>
+    <p>Early access registration. Takes about 2 minutes.</p>
+    <iframe
+      src="https://docs.google.com/forms/d/e/1FAIpQLSfS955PSpGmBXbM7xUatap6uERhr8_rEs5Bj4TgJ-Fy-Pjd3w/viewform?embedded=true"
+      loading="lazy">
+    </iframe>
+  </div>
+</div>
+
 <script>
   document.getElementById('y').textContent = new Date().getFullYear();
 
-  function openModal() {
-    document.getElementById('modal-overlay').style.display = 'flex';
+  function openRegister() {
+    document.getElementById('registerModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+    history.replaceState(null,'','#register');
+    if (typeof fbq === 'function') fbq('track','Lead');
   }
 
-  function closeModal() {
-    document.getElementById('modal-overlay').style.display = 'none';
+  function closeRegister() {
+    document.getElementById('registerModal').classList.remove('show');
+    document.body.style.overflow = '';
+    history.replaceState(null,'',window.location.pathname);
   }
 
-  // AUTO-OPEN MODAL ON PAGE LOAD
-  window.onload = function () {
-    openModal();
-  };
+  if (window.location.hash === '#register') {
+    window.addEventListener('load', openRegister);
+  }
 </script>
 
 </body>
