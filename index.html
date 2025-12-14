@@ -5,358 +5,70 @@
   <title>AidHandy — Travel Assistance, Simplified</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="AidHandy is a U.S.-based marketplace connecting travelers with vetted companions for calm, respectful airport and in-flight support. Book safely. Travel easier." />
+  <meta name="description" content="AidHandy is a U.S.-based marketplace connecting air travelers with vetted companions for airport and in-flight support. Book safely. Travel easier." />
   <meta name="theme-color" content="#1D9FD8" />
   <link rel="canonical" href="https://www.aidhandy.com/" />
 
+  <!-- FAVICONS -->
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+  <!-- CSS -->
   <style>
-    :root {
-      --ah-blue:#1D9FD8;
-      --ah-orange:#FF7A00;
-      --ah-text:#0f172a;
-      --ah-muted:#6b7280;
-      --ah-border:#e5e7eb;
-      --ah-soft:#f8fafc;
-    }
-
+    :root { --ah-blue:#1D9FD8; --ah-orange:#FF7A00; --ah-text:#333; --ah-muted:#667085; --ah-bg:#fff; --ah-border:#e5e7eb; }
     * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--ah-text);
-      background: #fff;
-      line-height: 1.6;
-    }
-
-    a { color: inherit; text-decoration: none; }
-
-    .wrap {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    /* Header */
-    header {
-      position: sticky;
-      top: 0;
-      background: rgba(255,255,255,0.9);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--ah-border);
-      z-index: 10;
-    }
-
-    .nav {
-      height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 20px;
-      color: var(--ah-blue);
-    }
-
-    nav a {
-      margin-left: 18px;
-      font-weight: 500;
-    }
-
-    /* Buttons */
-    .btn {
-      padding: 12px 20px;
-      border-radius: 12px;
-      font-weight: 600;
-      transition: all .2s ease;
-      display: inline-block;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--ah-blue), #178ec2);
-      color: #fff;
-      box-shadow: 0 6px 20px rgba(29,159,216,0.35);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 28px rgba(29,159,216,0.45);
-    }
-
-    .btn-ghost {
-      border: 2px solid var(--ah-blue);
-      color: var(--ah-blue);
-      background: #fff;
-    }
-
-    .btn-ghost:hover {
-      background: #f0f9ff;
-    }
-
-    /* Sections */
-    section {
-      padding: 96px 0;
-    }
-    
-    #book.section { /* Custom padding for the dedicated form section */
-        padding: 48px 0;
-    }
-
-    .soft-section {
-      background: var(--ah-soft);
-      border-top: 1px solid var(--ah-border);
-      border-bottom: 1px solid var(--ah-border);
-    }
-
-    /* Hero */
-    .hero {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(180deg,#f8fafc 0%,#ffffff 70%);
-    }
-
-    .hero::before {
-      content:"";
-      position:absolute;
-      top:-120px;
-      right:-120px;
-      width:420px;
-      height:420px;
-      background: radial-gradient(circle, rgba(29,159,216,0.2), transparent 60%);
-      filter: blur(30px);
-    }
-
-    .hero::after {
-      content:"";
-      position:absolute;
-      bottom:-160px;
-      left:-160px;
-      width:480px;
-      height:480px;
-      background: radial-gradient(circle, rgba(255,122,0,0.18), transparent 60%);
-      filter: blur(40px);
-    }
-
-    .badge {
-      display:inline-block;
-      font-size:12px;
-      padding:6px 12px;
-      border-radius:999px;
-      background:#ecfeff;
-      color:#0369a1;
-      border:1px solid #bae6fd;
-      margin-bottom:16px;
-    }
-
-    .hero h1 {
-      font-size: clamp(36px, 5vw, 56px);
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-      margin: 0 0 18px;
-      animation: fadeUp .6s ease forwards;
-      opacity: 0;
-    }
-
-    .hero p {
-      font-size: 18px;
-      color: var(--ah-muted);
-      max-width: 720px;
-      margin-bottom: 32px;
-      animation: fadeUp .6s ease forwards;
-      animation-delay: .1s;
-      opacity: 0;
-    }
-
-    .cta {
-      display:flex;
-      gap:16px;
-      flex-wrap:wrap;
-      animation: fadeUp .6s ease forwards;
-      animation-delay: .2s;
-      opacity: 0;
-    }
-
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(10px); }
-      to { opacity:1; transform:none; }
-    }
-
-    /* Grid / Cards */
-    .grid {
-      display:grid;
-      grid-template-columns:repeat(12,1fr);
-      gap:24px;
-    }
-
-    .card {
-      grid-column: span 6;
-      background: linear-gradient(180deg,#ffffff,#f9fafb);
-      border:1px solid var(--ah-border);
-      border-radius:20px;
-      padding:32px;
-      position:relative;
-      transition:transform .2s ease, box-shadow .2s ease;
-    }
-
-    .card:hover {
-      transform:translateY(-3px);
-      box-shadow:0 14px 40px rgba(2,8,23,0.08);
-    }
-    
-    .card.shadow { /* Re-using the shadow style from the second file */
-        box-shadow: 0 6px 24px rgba(2,8,23,0.06);
-    }
-
-    .card h2 {
-      margin-top:0;
-    }
-
-    /* Statement */
-    .statement {
-      max-width: 880px;
-      margin: 0 auto;
-      text-align: center;
-      background: linear-gradient(180deg,#ffffff,#f8fafc);
-      border:1px solid var(--ah-border);
-      border-radius:28px;
-      padding:56px 40px;
-    }
-
-    /* Footer */
-    footer {
-      border-top:1px solid var(--ah-border);
-      padding:40px 0;
-    }
-
-    footer a {
-      font-size:14px;
-      color:var(--ah-muted);
-      margin-right:18px;
-    }
-
-    .legal {
-      font-size:12px;
-      color:var(--ah-muted);
-      margin-top:10px;
-    }
-
-    /* Modal (from first file) */
-    .modal {
-      position:fixed;
-      inset:0;
-      display:none;
-      z-index:50;
-    }
-
-    .modal.show { display:block; }
-
-    .modal-backdrop {
-      position:absolute;
-      inset:0;
-      background:rgba(2,8,23,0.6);
-    }
-
-    .modal-content {
-      position:relative;
-      max-width:720px;
-      height:85vh;
-      margin:5vh auto;
-      background:#fff;
-      border-radius:20px;
-      padding:24px;
-      display:flex;
-      flex-direction:column;
-      box-shadow:0 30px 80px rgba(0,0,0,0.3);
-    }
-
-    .modal-content iframe {
-      flex:1;
-      border:0;
-      width:100%;
-    }
-
-    .modal-close {
-      position:absolute;
-      top:14px;
-      right:16px;
-      font-size:26px;
-      background:none;
-      border:none;
-      cursor:pointer;
-    }
-
-    /* Cookie */
-    .cookie {
-      position: fixed;
-      left: 16px;
-      right: 16px;
-      bottom: 16px;
-      background:#0b1220;
-      color:#e5e7eb;
-      border-radius: 14px;
-      padding: 14px;
-      display: none;
-      z-index: 60;
-    }
-
+    body { margin: 0; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color: var(--ah-text); background: var(--ah-bg); line-height: 1.6; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+    header { border-bottom: 1px solid var(--ah-border); background: #fff; position: sticky; top: 0; z-index: 10; }
+    .nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+    .brand { display: flex; gap: 10px; align-items: center; color: var(--ah-blue); text-decoration: none; font-weight: 700; font-size: 20px; }
+    .nav a { color: var(--ah-text); text-decoration: none; margin-left: 18px; font-weight: 500; }
+    .btn { display:inline-block; padding: 12px 18px; border-radius: 10px; text-decoration: none; font-weight: 600; }
+    .btn-primary { background: var(--ah-blue); color: #fff; }
+    .btn-ghost { background: #fff; color: var(--ah-blue); border: 2px solid var(--ah-blue); }
+    .hero { background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 60%); padding: 56px 0 36px; border-bottom: 1px solid var(--ah-border); }
+    .hero h1 { font-size: clamp(28px, 5vw, 44px); margin: 0 0 14px; color: #0f172a; }
+    .hero p { color: var(--ah-muted); font-size: 18px; margin: 0 0 24px; }
+    .hero .cta { display:flex; gap: 12px; flex-wrap: wrap; }
+    .grid { display: grid; gap: 18px; grid-template-columns: repeat(12, 1fr); }
+    .card { border: 1px solid var(--ah-border); border-radius: 16px; padding: 18px; background:#fff; }
+    .shadow { box-shadow: 0 6px 24px rgba(2,8,23,0.06); }
+    h2 { color: var(--ah-blue); margin: 24px 0 8px; }
+    h3 { color: #0f172a; margin: 12px 0 6px; }
+    .badge { display:inline-block; font-size:12px; background:#ECFEFF; color:#0369a1; border:1px solid #bae6fd; padding:4px 8px; border-radius:999px; }
+    footer { border-top:1px solid var(--ah-border); padding: 24px 0; background:#fff; margin-top: 24px; }
+    footer a { color: var(--ah-muted); text-decoration:none; margin-right: 14px; font-size: 14px; }
+    .legal { color: var(--ah-muted); font-size: 12px; margin-top: 8px; }
+    .cookie { position: fixed; left: 16px; right: 16px; bottom: 16px; background:#0b1220; color:#e5e7eb; border-radius: 14px; padding: 14px; display: none; z-index: 20; }
     .cookie a { color:#93c5fd; text-decoration: underline; }
-
-    .cookie .actions {
-      margin-top: 8px;
-      display: flex;
-      gap: 10px;
-    }
-
-    .cookie button {
-      cursor: pointer;
-      border:0;
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-weight: 600;
-    }
-
+    .cookie .actions { margin-top: 8px; display: flex; gap: 10px; }
+    .cookie button { cursor: pointer; border:0; border-radius: 10px; padding: 10px 14px; font-weight: 600; }
     .cookie .ok { background:#22c55e; color:#052e12; }
     .cookie .decline { background:#334155; color:#e5e7eb; }
-
-    @media (max-width:900px) {
-      .card { grid-column: span 12; }
-    }
   </style>
 
+  <!-- Meta Pixel -->
   <script>
-    !function(f,b,e,v,n,t,s){
-      if(f.fbq)return;
-      n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;
-      n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];
-      t=b.createElement(e);t.async=!0;
-      t.src=v;
-      s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)
-    }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init','1195389679143314');
-    fbq('track','PageView');
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1195389679143314');
+    fbq('track', 'PageView');
   </script>
-  
+
   <noscript>
     <img height="1" width="1" style="display:none"
       src="https://www.facebook.com/tr?id=1195389679143314&ev=PageView&noscript=1"/>
   </noscript>
+
 </head>
 
 <body>
@@ -371,90 +83,69 @@
       AidHandy
     </a>
     <nav>
-      <a href="#how">How it works</a>
+      <a href="#how-it-works">How it works</a>
       <a href="/contact.html">Contact</a>
       <a href="/terms.html">Terms</a>
       <a href="/privacy-policy.html">Privacy</a>
-      <a class="btn btn-primary" href="javascript:void(0)" onclick="openRegister()">Join as Companion</a>
+      <a class="btn btn-primary" href="#book">Book a Companion</a>
     </nav>
   </div>
 </header>
 
 <main>
 
-<section class="hero">
-  <div class="wrap">
-    <span class="badge">U.S. launch · ATL · JFK · LAX</span>
-    <h1>Together, every flight feels easier.</h1>
-    <p>
-      AidHandy connects travelers with vetted companions for calm, respectful
-      airport navigation and in-flight reassurance.
-    </p>
-    <div class="cta">
-      <a class="btn btn-primary" href="#book">Join the companion network</a> 
-      <a class="btn btn-ghost" href="/privacy-policy.html">Privacy-first operations</a>
+  <section class="hero">
+    <div class="wrap">
+      <span class="badge">U.S. launch · ATL · JFK · LAX</span>
+      <h1>Together, every flight feels easier.</h1>
+      <p>AidHandy connects travelers with vetted companions for airport navigation, check-in support, and in-flight reassurance.</p>
+
+      <div class="cta">
+        <a class="btn btn-primary" href="#book">Get started</a>
+        <a class="btn btn-ghost" href="/privacy-policy.html">Privacy-first operations</a>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="how" class="soft-section">
-  <div class="wrap grid">
-    <div class="card shadow">
-      <h2>For Travelers</h2>
-      <p>
-        Book on-demand support for airport navigation, gate changes,
-        boarding assistance, and calm in-flight reassurance.
-      </p>
+  <section id="how-it-works" class="section">
+    <div class="wrap grid">
+      <div class="card shadow" style="grid-column: span 6;">
+        <h2>For Travelers</h2>
+        <p>Book on-demand support for airport check-in, gate changes, boarding, and in-flight reassurance.</p>
+      </div>
+
+      <div class="card shadow" style="grid-column: span 6;">
+        <h2>For Companions</h2>
+        <p>Offer support on your schedule. We handle notifications and payments.</p>
+      </div>
     </div>
-    <div class="card shadow">
-      <h2>For Companions</h2>
-      <p>
-        Offer light, non-medical assistance on your schedule.
-        We handle matching, notifications, and payments.
-      </p>
+  </section>
+
+  <section id="book" class="section">
+    <div class="wrap grid">
+      <div class="card shadow" style="grid-column: span 7;">
+        <h2>Join as a Companion</h2>
+        <p>Become part of the AidHandy companion network. Fill out the early signup form below.</p>
+
+        <iframe 
+          src="https://docs.google.com/forms/d/e/1FAIpQLSfS955PSpGmBXbM7xUatap6uERhr8_rEs5Bj4TgJ-Fy-Pjd3w/viewform?embedded=true"
+          width="100%" height="2000" frameborder="0" marginheight="0" marginwidth="0">
+        </iframe>
+      </div>
+
+      <div class="card" style="grid-column: span 5;">
+        <h3>What you’ll get</h3>
+        <ul class="list">
+          <li>Launch notifications</li>
+          <li>Early access</li>
+          <li>SMS + email updates</li>
+        </ul>
+
+        <h3>Questions?</h3>
+        <p>Email: <a href="mailto:support@aidhandy.com">support@aidhandy.com</a></p>
+      </div>
     </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="statement">
-      <h3>Designed for dignity, not dependency</h3>
-      <p>
-        AidHandy provides light, non-medical assistance focused on navigation,
-        reassurance, and comfort. Travelers stay independent.
-        Companions stay professional.
-      </p>
-    </div>
-  </div>
-</section>
-
-<section id="book" class="section">
-  <div class="wrap grid">
-    <div class="card shadow" style="grid-column: span 7;">
-      <h2>Join as a Companion</h2>
-      <p>Become part of the AidHandy companion network. Fill out the early signup form below.</p>
-
-      <iframe 
-        src="https://docs.google.com/forms/d/e/1FAIpQLSfS955PSpGmBXbM7xUatap6uERhr8_rEs5Bj4TgJ-Fy-Pjd3w/viewform?embedded=true"
-        width="100%" height="2000" frameborder="0" marginheight="0" marginwidth="0">
-      </iframe>
-    </div>
-
-    <div class="card" style="grid-column: span 5;">
-      <h3>What you’ll get</h3>
-      <ul>
-        <li>Launch notifications</li>
-        <li>Early access</li>
-        <li>SMS + email updates</li>
-      </ul>
-
-      <h3>Questions?</h3>
-      <p>Email: <a href="mailto:support@aidhandy.com">support@aidhandy.com</a></p>
-    </div>
-  </div>
-</section>
-
+  </section>
 
 </main>
 
@@ -469,16 +160,6 @@
   </div>
 </footer>
 
-<div id="registerModal" class="modal">
-  <div class="modal-backdrop" onclick="closeRegister()"></div>
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeRegister()">×</button>
-    <h2>Join as a Companion</h2>
-    <p>Early access registration. Takes about 2 minutes.</p>
-    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfS955PSpGmBXbM7xUatap6uERhr8_rEs5Bj4TgJ-Fy-Pjd3w/viewform?embedded=true"></iframe>
-  </div>
-</div>
-
 <div id="cookie" class="cookie">
   We use cookies. <a href="/privacy-policy.html">Learn more</a>.
   <div class="actions">
@@ -489,26 +170,8 @@
 
 <script>
   document.getElementById('y').textContent = new Date().getFullYear();
-
-  function openRegister() {
-    document.getElementById('registerModal').classList.add('show');
-    document.body.style.overflow = 'hidden';
-    history.replaceState(null,'','#register');
-    if (typeof fbq === 'function') fbq('track','Lead');
-  }
-
-  function closeRegister() {
-    document.getElementById('registerModal').classList.remove('show');
-    document.body.style.overflow = '';
-    history.replaceState(null,'',window.location.pathname);
-  }
-
-  if (window.location.hash === '#register') {
-    window.addEventListener('load', openRegister);
-  }
-
-  if (localStorage.getItem('ah_cookie') === null) {
-    document.getElementById('cookie').style.display = 'block';
+  if(localStorage.getItem('ah_cookie')===null){
+    document.getElementById('cookie').style.display='block';
   }
 </script>
 
