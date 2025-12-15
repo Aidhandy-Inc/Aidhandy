@@ -2,28 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>AidHandy — Travel Assistance, Simplified</title>
+  <title>About Us — AidHandy</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="AidHandy is a U.S.-based marketplace connecting air travelers with vetted companions for airport and in-flight support. Book safely. Travel easier." />
+  <meta name="description" content="Learn about AidHandy, a premium platform connecting travelers with vetted companions for airport and in-flight support." />
   <meta name="theme-color" content="#1D9FD8" />
-  <link rel="canonical" href="https://www.aidhandy.com/" />
-  
-  <!-- Fonts -->
+  <link rel="canonical" href="https://www.aidhandy.com/about.html" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Zodiak:wght@400;500;700;800&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- CSS -->
   <style>
-    :root { 
+    :root {
       --ah-blue: #0A4D68;
       --ah-blue-light: #0C6B8C;
       --ah-blue-bright: #1B9AAA;
       --ah-gold: #D4AF37;
       --ah-gold-light: #E8C547;
-      --ah-orange: #C17817;
-      --ah-orange-light: #D89A3C;
       --ah-text: #0A1929;
       --ah-text-medium: #1E293B;
       --ah-text-light: #475569;
@@ -32,90 +36,73 @@
       --ah-white: #FFFFFF;
       --ah-border: #E1E8F0;
       --ah-accent: #F0F4F8;
-      --ah-accent-warm: #FFF9F0;
       --radius-sm: 14px;
       --radius-md: 20px;
       --radius-lg: 28px;
-      --shadow-sm: 0 2px 8px rgba(10, 77, 104, 0.04);
       --shadow-md: 0 4px 24px rgba(10, 77, 104, 0.08);
       --shadow-lg: 0 12px 48px rgba(10, 77, 104, 0.12);
-      --shadow-xl: 0 20px 64px rgba(10, 77, 104, 0.16);
-      --shadow-gold: 0 8px 32px rgba(212, 175, 55, 0.15);
     }
-    
+
     * { 
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-    
-    body { 
+
+    body {
       font-family: 'Schibsted Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--ah-text);
       background: var(--ah-bg);
       line-height: 1.7;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      overflow-x: hidden;
     }
-    
-    .wrap { 
-      max-width: 1320px;
+
+    a { 
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .wrap {
+      max-width: 1120px;
       margin: 0 auto;
-      padding: 0 40px;
+      padding: 0 32px;
     }
 
-    /* Decorative elements */
-    .grain {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      opacity: 0.015;
-      z-index: 1000;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    }
-
-    /* Header */
-    header { 
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(24px) saturate(180%);
-      -webkit-backdrop-filter: blur(24px) saturate(180%);
+    header {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(225, 232, 240, 0.6);
       position: sticky;
       top: 0;
       z-index: 100;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
-    header.scrolled {
-      background: rgba(255, 255, 255, 0.95);
-      box-shadow: var(--shadow-md);
-      border-bottom-color: transparent;
-    }
-    
-    .nav { 
+
+    .nav {
+      height: 88px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 88px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Zodiak', serif;
+      font-weight: 700;
+      font-size: 26px;
+      letter-spacing: -0.03em;
+      color: #3d3d3d;
+      transition: transform 0.3s ease;
     }
     
-    .brand { 
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      text-decoration: none;
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    .brand:hover {
+      transform: translateY(-2px);
     }
     
     .brand-icon {
       width: 50px;
       height: 38px;
-      position: relative;
-      animation: float 4s ease-in-out infinite;
     }
     
     .brand-icon svg {
@@ -124,152 +111,37 @@
       filter: drop-shadow(0 2px 8px rgba(91, 168, 212, 0.3));
     }
     
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-4px); }
-    }
-    
-    .brand-text {
-      font-family: 'Zodiak', serif;
-      font-weight: 700;
-      font-size: 26px;
-      letter-spacing: -0.03em;
-      color: #3d3d3d;
-    }
-    
     .brand-highlight {
       color: #5ba8d4;
     }
-    
-    .brand:hover {
-      transform: translateY(-2px);
-    }
-    
-    .brand:hover .brand-icon {
-      animation-play-state: paused;
-      transform: translateY(-2px) scale(1.05);
-    }
-    
-    .nav-links {
+
+    nav {
       display: flex;
-      align-items: center;
       gap: 6px;
-    }
-    
-    .nav-links a { 
-      color: var(--ah-text-light);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 15px;
-      padding: 11px 18px;
-      border-radius: var(--radius-sm);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      letter-spacing: -0.01em;
-    }
-    
-    .nav-links a:not(.btn):hover {
-      color: var(--ah-blue);
-      background: var(--ah-accent);
-    }
-    
-    .btn { 
-      display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 13px 28px;
-      border-radius: var(--radius-sm);
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 15px;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      cursor: pointer;
-      border: none;
-      white-space: nowrap;
-      letter-spacing: -0.01em;
-      position: relative;
-      overflow: hidden;
-      z-index: 10;
-      pointer-events: auto;
-    }
-    
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-    
-    .btn:hover::before {
-      width: 300px;
-      height: 300px;
-    }
-    
-    .btn span {
-      position: relative;
-      z-index: 1;
-    }
-    
-    .btn span {
-      position: relative;
-      z-index: 1;
-    }
-    
-    .btn svg {
-      position: relative;
-      z-index: 1;
-    }
-    
-    .btn-primary { 
-      background: linear-gradient(135deg, #1B9AAA 0%, #22C3D6 50%, #2DD4E7 100%);
-      color: var(--ah-white);
-      box-shadow: 0 4px 16px rgba(27, 154, 170, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 32px rgba(27, 154, 170, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
-    
-    .btn-secondary {
-      background: linear-gradient(135deg, var(--ah-gold) 0%, var(--ah-gold-light) 100%);
-      color: var(--ah-text);
-      box-shadow: var(--shadow-gold), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .btn-secondary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 40px rgba(212, 175, 55, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-    }
-    
-    .btn-ghost { 
-      background: var(--ah-white);
-      color: var(--ah-blue);
-      border: 2px solid var(--ah-border);
-      box-shadow: var(--shadow-sm);
-    }
-    
-    .btn-ghost:hover {
-      background: var(--ah-accent);
-      border-color: var(--ah-blue);
-      box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
     }
 
-    /* Hero Section */
-    .hero { 
-      background: 
-        radial-gradient(ellipse 120% 80% at 30% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse 100% 70% at 70% 20%, rgba(27, 154, 170, 0.06) 0%, transparent 50%),
-        linear-gradient(180deg, #FAFBFD 0%, #FFFFFF 100%);
+    nav a {
+      padding: 11px 18px;
+      font-weight: 500;
+      font-size: 15px;
+      color: var(--ah-text-light);
+      border-radius: var(--radius-sm);
+      transition: all 0.3s ease;
+    }
+    
+    nav a:hover {
+      color: var(--ah-blue);
+      background: var(--ah-accent);
+    }
+
+    section {
+      padding: 80px 0;
+    }
+
+    .hero {
+      background: linear-gradient(165deg, #F0F9FF 0%, #FFFFFF 50%, #FFF7ED 100%);
+      border-bottom: 1px solid var(--ah-border);
       padding: 120px 0 100px;
       position: relative;
       overflow: hidden;
@@ -278,11 +150,345 @@
     .hero::before {
       content: '';
       position: absolute;
-      top: -60%;
+      top: -50%;
       right: -15%;
-      width: 900px;
-      height: 900px;
-      background: radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, transparent 65%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 65%);
       border-radius: 50%;
-      animation: pulseGold 12s ease-in-out infinite;
-  
+      filter: blur(60px);
+    }
+
+    .hero h1 {
+      font-family: 'Zodiak', serif;
+      font-size: clamp(40px, 6vw, 64px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      line-height: 1.1;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, var(--ah-blue) 0%, var(--ah-blue-bright) 50%, var(--ah-gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 20px;
+      color: var(--ah-text-light);
+      max-width: 720px;
+      line-height: 1.65;
+      position: relative;
+      z-index: 2;
+    }
+
+    h2 {
+      font-family: 'Zodiak', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--ah-text);
+      margin: 0 0 24px;
+      letter-spacing: -0.02em;
+    }
+    
+    h3 {
+      font-family: 'Zodiak', serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--ah-text);
+      margin: 32px 0 16px;
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 17px;
+      color: var(--ah-text-light);
+      line-height: 1.75;
+    }
+    
+    ul {
+      margin: 24px 0;
+      padding-left: 0;
+      list-style: none;
+    }
+    
+    ul li {
+      padding: 12px 0 12px 38px;
+      position: relative;
+      font-size: 17px;
+      color: var(--ah-text-light);
+      line-height: 1.6;
+    }
+    
+    ul li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--ah-white);
+      font-weight: 700;
+      width: 26px;
+      height: 26px;
+      background: linear-gradient(135deg, var(--ah-blue) 0%, var(--ah-blue-bright) 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      box-shadow: 0 3px 12px rgba(27, 154, 170, 0.3);
+    }
+    
+    strong {
+      color: var(--ah-text);
+      font-weight: 600;
+    }
+
+    .panel {
+      background: var(--ah-white);
+      border: 1px solid var(--ah-border);
+      border-radius: var(--radius-lg);
+      padding: 48px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 32px;
+      transition: all 0.4s ease;
+    }
+    
+    .panel:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+    }
+    
+    .section-label {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--ah-gold);
+      margin-bottom: 20px;
+      padding: 6px 16px;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(232, 197, 71, 0.1) 100%);
+      border-radius: 999px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    footer {
+      background: var(--ah-text);
+      color: var(--ah-white);
+      padding: 56px 0 32px;
+      position: relative;
+    }
+    
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(212, 175, 55, 0.3) 50%, transparent 100%);
+    }
+
+    footer a {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.65);
+      margin-right: 24px;
+      transition: color 0.3s ease;
+    }
+    
+    footer a:hover {
+      color: var(--ah-gold-light);
+    }
+
+    .legal {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.45);
+      margin-top: 24px;
+    }
+    
+    @media (max-width: 768px) {
+      .wrap {
+        padding: 0 24px;
+      }
+      
+      .panel {
+        padding: 32px 24px;
+      }
+      
+      section {
+        padding: 56px 0;
+      }
+      
+      .hero {
+        padding: 80px 0 64px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/">
+      <div class="brand-icon">
+        <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 60 90 Q 70 70, 85 70 L 120 70 Q 130 70, 135 75 L 145 85 Q 148 88, 145 92 L 130 110 Q 125 115, 120 115 L 80 115 Q 70 115, 65 105 Z" 
+                fill="#5ba8d4" opacity="0.9"/>
+          <ellipse cx="125" cy="65" rx="8" ry="12" fill="#5ba8d4" opacity="0.9"/>
+          <ellipse cx="135" cy="62" rx="7" ry="11" fill="#5ba8d4" opacity="0.9"/>
+          <ellipse cx="145" cy="65" rx="7" ry="10" fill="#5ba8d4" opacity="0.9"/>
+          <path d="M 60 90 Q 80 30, 140 40" 
+                fill="none" 
+                stroke="#5ba8d4" 
+                stroke-width="8" 
+                stroke-linecap="round"
+                opacity="0.8"/>
+          <g transform="translate(140, 20)">
+            <path d="M 0 15 L 25 10 L 30 12 L 25 17 L 0 15 Z" fill="#5ba8d4"/>
+            <path d="M 10 10 L 5 0 L 15 8 Z" fill="#5ba8d4"/>
+            <path d="M 10 20 L 5 30 L 15 22 Z" fill="#5ba8d4"/>
+            <path d="M 0 12 L -5 8 L 0 15 Z" fill="#5ba8d4"/>
+            <path d="M 0 15 L -5 22 L 0 18 Z" fill="#5ba8d4"/>
+          </g>
+        </svg>
+      </div>
+      <span class="brand-text">Aid<span class="brand-highlight">H</span>andy</span>
+    </a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about.html">About</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/privacy-policy.html">Privacy</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>About <span class="gradient-text">AidHandy</span></h1>
+    <p>
+      AidHandy is a premium U.S.-based platform designed to transform air travel 
+      by connecting travelers with carefully vetted companions who provide personalized, 
+      non-medical support throughout the airport and flight experience.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="panel">
+      <div class="section-label">Our Mission</div>
+      <h2>Why AidHandy Exists</h2>
+      <p>
+        Air travel can be overwhelming—navigating busy airports, managing check-in procedures, 
+        dealing with unexpected gate changes, and experiencing in-flight anxiety. While traditional 
+        solutions focus on medical care or institutional assistance, many travelers simply need 
+        calm, empathetic human support.
+      </p>
+      <p>
+        AidHandy was created to fill this critical gap by offering a dignified, flexible, 
+        and privacy-conscious service that respects traveler independence while providing 
+        the reassurance and guidance they need.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="panel">
+      <div class="section-label">Our Services</div>
+      <h2>What We Do</h2>
+      <p>
+        AidHandy connects travelers with professional companions who provide support with:
+      </p>
+      <ul>
+        <li>Airport navigation and wayfinding assistance</li>
+        <li>Check-in counter and security checkpoint support</li>
+        <li>Gate location and boarding assistance</li>
+        <li>In-flight reassurance and companionship</li>
+        <li>Luggage handling guidance</li>
+        <li>Connection flight coordination</li>
+      </ul>
+      <p>
+        <strong>Important:</strong> All services provided through AidHandy are strictly 
+        non-medical and non-clinical in nature. We focus on emotional support, navigation 
+        assistance, and travel companionship.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="panel">
+      <div class="section-label">Our Values</div>
+      <h2>Our Approach</h2>
+      <p>
+        AidHandy is built on three foundational principles that guide everything we do:
+      </p>
+      <ul>
+        <li><strong>Dignity:</strong> We believe travelers should remain independent and in control of their journey. Our companions empower rather than enable dependency.</li>
+        <li><strong>Trust:</strong> Every companion undergoes rigorous vetting, background checks, and training to meet our professional standards and ensure traveler safety.</li>
+        <li><strong>Privacy:</strong> We maintain strict privacy standards. No medical services or sensitive health data are involved in our operations.</li>
+      </ul>
+      <p>
+        Through thoughtful platform design, clear service boundaries, and transparent 
+        operations, we create a respectful and premium experience for both travelers 
+        and companions.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="panel">
+      <div class="section-label">Our Commitment</div>
+      <h2>Safety & Quality Standards</h2>
+      <p>
+        AidHandy is committed to maintaining the highest standards of safety and service quality:
+      </p>
+      <ul>
+        <li>Comprehensive background checks for all companions</li>
+        <li>Ongoing training and professional development</li>
+        <li>24/7 platform support and monitoring</li>
+        <li>Transparent pricing with no hidden fees</li>
+        <li>Clear service guidelines and boundaries</li>
+        <li>Secure, privacy-first data handling</li>
+      </ul>
+      <p>
+        We're dedicated to creating a marketplace that travelers can trust and companions 
+        are proud to be part of.
+      </p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <a href="/privacy-policy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms of Service</a>
+      <a href="/contact.html">Contact Us</a>
+      <a href="/">Home</a>
+    </div>
+    <div class="legal">© <span id="y"></span> AidHandy Inc. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('y').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
