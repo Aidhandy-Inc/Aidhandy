@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>About Us — AidHandy</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Learn about AidHandy, a premium platform connecting travelers with vetted companions for airport and in-flight support." />
+  <meta name="theme-color" content="#1D9FD8" />
+  <link rel="canonical" href="https://www.aidhandy.com/about.html" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zodiak:wght@400;500;700;800&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --ah-blue: #0A4D68;
+      --ah-blue-light: #0C6B8C;
+      --ah-blue-bright: #1B9AAA;
+      --ah-gold: #D4AF37;
+      --ah-gold-light: #E8C547;
+      --ah-text: #0A1929;
+      --ah-text-medium: #1E293B;
+      --ah-text-light: #475569;
+      --ah-muted: #64748B;
+      --ah-bg: #FAFBFD;
+      --ah-white: #FFFFFF;
+      --ah-border: #E1E8F0;
+      --ah-accent: #F0F4F8;
+      --radius-sm: 14px;
+      --radius-md: 20px;
+      --radius-lg: 28px;
+      --shadow-md: 0 4px 24px rgba(10, 77, 104, 0.08);
+      --shadow-lg: 0 12px 48px rgba(10, 77, 104, 0.12);
+    }
+
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Schibsted Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ah-text);
+      background: var(--ah-bg);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { 
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(225, 232, 240, 0.6);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav {
+      height: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Zodiak', serif;
+      font-weight: 700;
+      font-size: 26px;
+      letter-spacing: -0.03em;
+      color: #3d3d3d;
+      transition: transform 0.3s ease;
+    }
+    
+    .brand:hover {
+      transform: translateY(-2px);
+    }
+    
+    .brand-icon {
+      width: 50px;
+      height: 38px;
+    }
+    
+    .brand-icon svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 2px 8px rgba(91, 168, 212, 0.3));
+    }
+    
+    .brand-highlight {
+      color: #5ba8d4;
+    }
+
+    nav {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    nav a {
+      padding: 11px 18px;
+      font-weight: 500;
+      font-size: 15px;
+      color: var(--ah-text-light);
+      border-radius: var(--radius-sm);
+      transition: all 0.3s ease;
+    }
+    
+    nav a:hover {
+      color: var(--ah-blue);
+      background: var(--ah-accent);
+    }
+
+    section {
+      padding: 80px 0;
+    }
+
+    .hero {
+      background: linear-gradient(165deg, #F0F9FF 0%, #FFFFFF 50%, #FFF7ED 100%);
+      border-bottom: 1px solid var(--ah-border);
+      padding: 120px 0 100px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -15%;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 65%);
+      border-radius: 50%;
+      filter: blur(60px);
+    }
+
+    .hero h1 {
+      font-family: 'Zodiak', serif;
+      font-size: clamp(40px, 6vw, 64px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      line-height: 1.1;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, var(--ah-blue) 0%, var(--ah-blue-bright) 50%, var(--ah-gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 20px;
+      color: var(--ah-text-light);
+      max-width: 720px;
+      line-height: 1.65;
+      position: relative;
+      z-index: 2;
+    }
+
+    h2 {
+      font-family: 'Zodiak', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--ah-text);
+      margin: 0 0 24px;
+      letter-spacing: -0.02em;
+    }
+    
+    h3 {
+      font-family: 'Zodiak', serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--ah-text);
+      margin: 32px 0 16px;
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 17px;
+      color: var(--ah-text-light);
+      line-height: 1.75;
+    }
+    
+    ul {
+      margin: 24px 0;
+      padding-left: 0;
+      list-style: none;
+    }
+    
+    ul li {
+      padding: 12px 0 12px 38px;
+      position: relative;
+      font-size: 17px;
+      color: var(--ah-text-light);
+      line-height: 1.6;
+    }
+    
+    ul li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--ah-white);
+      font-weight: 700;
+      width: 26px;
+      height: 26px;
+      background: linear-gradient(135deg, var(--ah-blue) 0%, var(--ah-blue-bright) 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      box-shadow: 0 3px 12px rgba(27, 154, 170, 0.3);
+    }
+    
+    strong {
+      color: var(--ah-text);
+      font-weight: 600;
+    }
+
+    .panel {
+      background: var(--ah-white);
+      border: 1px solid var(--ah-border);
+      border-radius: var(--radius-lg);
+      padding: 48px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 32px;
+      transition: all 0.4s ease;
+    }
+    
+    .panel:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+    }
+    
+    .section-label {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--ah-gold);
+      margin-bottom: 20px;
+      padding: 6px 16px;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(232, 197, 71, 0.1) 100%);
+      border-radius: 999px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    footer {
+      background: var(--ah-text);
+      color: var(--ah-white);
+      padding: 56px 0 32px;
+      position: relative;
+    }
+    
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(212, 175, 55, 0.3) 50%, transparent 100%);
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    
+    .footer-brand-section {
+      max-width: 400px;
+    }
+    
+    .footer-brand {
+      font-family: 'Zodiak', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--ah-white);
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #FFFFFF 0%, rgba(212, 175, 55, 0.9) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .footer-tagline {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    
+    .footer-links-section {
+      display: flex;
+      gap: 64px;
+    }
+    
+    .footer-column h4 {
+      color: var(--ah-white);
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+    
+    .footer-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .footer-column a {
+      color: rgba(255, 255, 255, 0.65);
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 400;
+      transition: all 0.3s ease;
+      width: fit-content;
+    }
+    
+    .footer-column a:hover {
+      color: var(--ah-gold-light);
+      transform: translateX(4px);
+    }
+    
+    .footer-bottom {
+      padding-top: 32px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .social-links {
+      display: flex;
+      gap: 16px;
+    }
+    
+    .social-links a {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.6);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .social-links a:hover {
+      background: var(--ah-gold);
+      color: var(--ah-text);
+      border-color: var(--ah-gold);
+      transform: translateY(-3px);
+    }
+
+    footer a {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.65);
+      transition: color 0.3s ease;
+    }
+
+    .legal {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.45);
+    }
+    
+    @media (max-width: 768px) {
+      .wrap {
+        padding: 0 24px;
+      }
+      
+      .panel {
+        padding: 32px 24px;
+      }
+      
+      section {
+        padding: 56px 0;
+      }
+      
+      .hero {
+        padding: 80px 0 64px;
+      }
+      
+      .footer-content {
+        flex-direction: column;
+        gap: 32px;
+      }
+      
+      .footer-links-section {
+        flex-direction: column;
+        gap: 32px;
+        width: 100%;
+      }
+      
+      .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/">
+      <div class="brand-icon">
+        <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 60 90 Q 70 70, 85 70 L 120 70 Q 130 70, 135 75 L 145 85 Q 148 88, 145 92 L 130 110 Q 125 115, 120 115 L 80 115 Q 70 115, 65 105 Z" 
+                fill="#5ba8d4" opacity="0.9"/>
+          <ellipse cx="125" cy="65" rx="8" ry="12" fill="#5ba8d4" opacity="0.9"/>
+          <ellipse cx="135" cy="62" rx="7" ry="11" fill="#5ba8d4" opacity="0.9"/>
+          <ellipse cx="145" cy="65" rx="7" ry="10" fill="#5ba8d4" opacity="0.9"/>
+          <path d="M 60 90 Q 80 30, 140 40" 
+                fill="none" 
+                stroke="#5ba8d4" 
+                stroke-width="8" 
+                stroke-linecap="round"
+                opacity="0.8"/>
+          <g transform="translate(140, 20)">
+            <path d="M 0 15 L 25 10 L 30 12 L 25 17 L 0 15 Z" fill="#5ba8d4"/>
+            <path d="M 10 10 L 5 0 L 15 8 Z" fill="#5ba8d4"/>
+            <path d="M 10 20 L 5 30 L 15 22 Z" fill="#5ba8d4"/>
+            <path d="M 0 12 L -5 8 L 0 15 Z" fill="#5ba8d4"/>
+            <path d="M 0 15 L -5 22 L 0 18 Z" fill="#5ba8d4"/>
+          </g>
+        </svg>
+      </div>
+      <span class="brand-text">Aid<span class="brand-highlight">H</span>andy</span>
+    </a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about.html">About</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/privacy-policy.html">Privacy</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>About <span class="gradient-text">AidHandy</span></h1>
+    <p>
+      AidHandy is a premium U.S.-based platform designed to transform air travel 
+      by connecting travelers with carefully vetted companions who provide personalized, 
+      non-medical support throughout the airport and flight experience.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="panel">
+      <div class="section-label">Our Mission</div>
+      <h2>Why AidHandy Exists</h2>
+      <p>
+        Air travel can be overwhelming—navigating busy airports, managing check-in procedures, 
+        dealing with unexpected gate changes, and experiencing in-flight anxiety. While traditional 
+        solutions focus on medical care or institutional assistance, many travelers simply need 
+        calm, empathetic human support.
+      </p>
+      <p>
+        AidHandy was created to fill this critical gap by offering a dignified, flexible, 
+        and privacy-conscious service that respects traveler independence while providing 
+        the reassurance and guidance they need.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="panel">
+      <div class="section-label">Our Services</div>
+      <h2>What We Do</h2>
+      <p>
+        AidHandy connects travelers with professional companions who provide essential support throughout their journey:
+      </p>
+      <ul>
+        <li>Airport navigation and check-in assistance</li>
+        <li>Gate location and boarding support</li>
+        <li>In-flight reassurance and companionship</li>
+      </ul>
+      <p>
+        <strong>Important:</strong> All services are strictly non-medical and non-clinical in nature. We focus on emotional support and travel companionship.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="panel">
+      <div class="section-label">Our Values</div>
+      <h2>Our Approach</h2>
+      <p>
+        AidHandy is built on three foundational principles that guide everything we do:
+      </p>
+      <ul>
+        <li><strong>Dignity:</strong> We believe travelers should remain independent and in control of their journey. Our companions empower rather than enable dependency.</li>
+        <li><strong>Trust:</strong> Every companion undergoes rigorous vetting, background checks, and training to meet our professional standards and ensure traveler safety.</li>
+        <li><strong>Privacy:</strong> We maintain strict privacy standards. No medical services or sensitive health data are involved in our operations.</li>
+      </ul>
+      <p>
+        Through thoughtful platform design, clear service boundaries, and transparent 
+        operations, we create a respectful and premium experience for both travelers 
+        and companions.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="panel">
+      <div class="section-label">Our Commitment</div>
+      <h2>Safety & Quality Standards</h2>
+      <p>
+        AidHandy maintains rigorous standards to ensure a safe, reliable experience:
+      </p>
+      <ul>
+        <li>Comprehensive background checks for all companions</li>
+        <li>24/7 platform support</li>
+        <li>Transparent pricing with no hidden fees</li>
+        <li>Secure, privacy-first operations</li>
+      </ul>
+      <p>
+        We're dedicated to creating a trusted marketplace for travelers and companions alike.
+      </p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-content">
+      <div class="footer-brand-section">
+        <div class="footer-brand">AidHandy</div>
+        <p class="footer-tagline">Making travel easier, one journey at a time. Premium travel assistance that puts people first.</p>
+      </div>
+      
+      <div class="footer-links-section">
+        <div class="footer-column">
+          <h4>Company</h4>
+          <a href="/about.html">About Us</a>
+          <a href="/contact.html">Contact</a>
+        </div>
+        
+        <div class="footer-column">
+          <h4>Legal</h4>
+          <a href="/privacy-policy.html">Privacy Policy</a>
+          <a href="/terms.html">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <div class="legal">© <span id="y"></span> AidHandy Inc. All rights reserved.</div>
+      <div class="social-links">
+        <a href="#" aria-label="LinkedIn">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+          </svg>
+        </a>
+        <a href="#" aria-label="Twitter">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
+          </svg>
+        </a>
+        <a href="#" aria-label="Instagram">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+            <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M17.5 6.5h.01"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('y').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
