@@ -189,6 +189,8 @@
       letter-spacing: -0.01em;
       position: relative;
       overflow: hidden;
+      z-index: 10;
+      pointer-events: auto;
     }
     
     .btn::before {
@@ -210,6 +212,16 @@
     }
     
     .btn span {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .btn span {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .btn svg {
       position: relative;
       z-index: 1;
     }
@@ -745,11 +757,15 @@
       box-shadow: var(--shadow-lg);
       text-align: center;
       padding: 64px 48px;
+      position: relative;
+      z-index: 1;
     }
     
     .form-cta-content {
       max-width: 600px;
       margin: 0 auto;
+      position: relative;
+      z-index: 2;
     }
     
     .form-icon {
