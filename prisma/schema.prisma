@@ -1,0 +1,217 @@
+// This is your Prisma schema file for Supabase PostgreSQL
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enum for user roles
+enum UserRole {
+  traveller
+  companion
+  admin
+}
+
+// Users table (references auth.users)
+model User {
+  id         String   @id @db.Uuid
+  email      String   @unique
+  full_name  String?  @map("full_name")
+  avatar_url String?  @map("avatar_url")
+  role       UserRole @default(traveller)
+  status     String   @default("active")
+  created_at DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  bookings   Booking[]
+  pairings   Pairing[]
+  phone_otps PhoneOtp[]
+  traveller  Traveller?
+  companion  Companion?
+
+  @@index([email])
+  @@map("users")
+}
+
+// Travellers table
+model Traveller {
+  id                        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  first_name                String?   @map("first_name")
+  last_name                 String?   @map("last_name")
+  email                     String?
+  phone                     String?
+  special_needs             String[]  @map("special_needs")
+  profile_photo_url         String?   @map("profile_photo_url")
+  user_id                   String?   @unique @map("user_id") @db.Uuid
+  is_phone_verified         Boolean   @default(false) @map("is_phone_verified")
+  is_email_verified         Boolean   @default(false) @map("is_email_verified")
+  email_verification_token  String?   @map("email_verification_token")
+  language                  String[]
+  gender                    String?
+  created_at                DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updated_at                DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  // Relations (references auth.users, not public.users)
+  user User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("travellers")
+}
+
+// Companions table
+model Companion {
+  id                       String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  first_name               String    @map("first_name")
+  last_name                String?   @map("last_name")
+  email                    String?
+  phone                    String?
+  dob                      DateTime? @db.Date
+  gender                   String?
+  service_types            String[]  @map("service_types")
+  preferred_airports       String[]  @map("preferred_airports")
+  languages                String[]
+  short_bio                String?   @map("short_bio")
+  skill_certificates       String[]  @map("skill_certificates")
+  profile_photo_url        String?   @map("profile_photo_url")
+  user_id                  String    @unique @map("user_id") @db.Uuid
+  is_phone_verified        Boolean   @default(false) @map("is_phone_verified")
+  is_email_verified        Boolean   @default(false) @map("is_email_verified")
+  is_kyc_approved          Boolean   @default(false) @map("is_kyc_approved")
+  stripe_account_id        String?   @map("stripe_account_id")
+  stripe_onboarding_status String?   @map("stripe_onboarding_status")
+  stripe_account_status    String?   @map("stripe_account_status")
+  stripe_payouts_enabled   Boolean   @default(false) @map("stripe_payouts_enabled")
+  stripe_charges_enabled   Boolean   @default(false) @map("stripe_charges_enabled")
+  stripe_requirements      Json?     @map("stripe_requirements")
+  created_at               DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updated_at               DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  // Relations (references auth.users, not public.users)
+  user     User?      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  add_ons  AddOn[]
+  email_otps EmailOtp[]
+
+  @@map("companions")
+}
+
+// Bookings table
+model Booking {
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  traveler_id         String?   @map("traveler_id") @db.Uuid
+  flight_number       String    @map("flight_number")
+  airline_name        String    @map("airline_name")
+  departure_date      DateTime  @map("departure_date") @db.Date
+  arrival_date        DateTime? @map("arrival_date") @db.Date
+  seat_number         String?   @map("seat_number")
+  duffel_order_id     String?   @map("duffel_order_id")
+  departure_airport   String?   @map("departure_airport") @db.VarChar(255)
+  destination_airport String?   @map("destination_airport") @db.VarChar(255)
+  departure_iata      String?   @map("departure_iata")
+  destination_iata    String?   @map("destination_iata")
+  price               Decimal?  @db.Decimal(10, 2)
+  stop_description    String?   @map("stop_description")
+  status              String    @default("pending")
+  created_at          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updated_at          DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  traveler User?    @relation(fields: [traveler_id], references: [id], onDelete: Cascade)
+  add_ons  AddOn[]
+  payouts  Payout[]
+
+  @@map("bookings")
+}
+
+// Add-ons table
+model AddOn {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  booking_id   String?   @map("booking_id") @db.Uuid
+  companion_id String?   @map("companion_id") @db.Uuid
+  addon_type   String    @map("addon_type")
+  price        Decimal   @default(0) @db.Decimal
+  created_at   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updated_at   DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  booking   Booking?   @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+  companion Companion? @relation(fields: [companion_id], references: [id])
+
+  @@map("add_ons")
+}
+
+// Pairings table
+model Pairing {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  traveler_id  String?  @map("traveler_id") @db.Uuid
+  companion_id String?  @map("companion_id") @db.Uuid
+  airline_name String   @map("airline_name")
+  flight_number String  @map("flight_number")
+  flight_date  DateTime @map("flight_date") @db.Date
+  seat_number  String?  @map("seat_number")
+  status       String   @default("pending_payment")
+  created_at   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  traveler User? @relation(fields: [traveler_id], references: [id], onDelete: Cascade)
+
+  @@map("pairings")
+}
+
+// Payouts table
+model Payout {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  booking_id     String?   @map("booking_id") @db.Uuid
+  amount         Decimal   @db.Decimal
+  currency       String    @default("USD")
+  payment_status String    @default("pending") @map("payment_status")
+  payment_method String?   @map("payment_method")
+  paid_at        DateTime? @map("paid_at") @db.Timestamptz(6)
+  created_at     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updated_at     DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  booking Booking? @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+
+  @@map("payouts")
+}
+
+// Phone OTPs table
+model PhoneOtp {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  phone      String
+  otp_hash   String   @map("otp_hash")
+  user_id    String   @map("user_id") @db.Uuid
+  created_at DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  expires_at DateTime @map("expires_at") @db.Timestamptz(6)
+  verified   Boolean  @default(false)
+  used       Boolean  @default(false)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([phone])
+  @@map("phone_otps")
+}
+
+// Email OTPs table
+model EmailOtp {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id           String?   @map("user_id") @db.Uuid
+  email             String
+  verification_code String    @map("verification_code")
+  expires_at        DateTime  @map("expires_at") @db.Timestamptz(6)
+  verified          Boolean   @default(false)
+  verified_at       DateTime? @map("verified_at") @db.Timestamptz(6)
+  created_at        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations (references auth.users, not public.users)
+  companion Companion? @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("email_otps")
+}
