@@ -124,7 +124,7 @@ export default function Login() {
       showError("Please enter a valid email address.");
       return;
     }
-    const BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:8080";
 
     // Build dynamic redirect URL
     const redirectUrl = `${BASE_URL}/dashboard?role=${role}&firstName=${encodeURIComponent(
@@ -155,10 +155,8 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // showError("");
 
-    const BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    // Send OTP with redirect
+    const BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:8080";
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
