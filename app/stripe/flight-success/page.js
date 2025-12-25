@@ -160,6 +160,28 @@ export default function FlightSuccess() {
             .eq("id", pairingId);
         }
 
+        // 🔹 7. Send booking confirmation email
+        try {
+          await supabase.functions.invoke("send-booking-confirmation-email", {
+            body: {
+              booking_id: bookingData?.[0]?.id,
+              user_email: profile.email,
+              flight_details: {
+                flight_number: booking.flight_number,
+                departure_airport: booking.departure_airport,
+                destination_airport: booking.destination_airport,
+                departure_date: booking.departure_date,
+                price: booking.price,
+                airline_name: booking.airline_name,
+              },
+            },
+          });
+          console.log("Confirmation email sent");
+        } catch (emailError) {
+          console.error("Failed to send confirmation email:", emailError);
+          // Don't block the booking flow if email fails
+        }
+
         // ✅ Done!
         alert(
           `✅ Flight booking ${duffelStatus}!` +
