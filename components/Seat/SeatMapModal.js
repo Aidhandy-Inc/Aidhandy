@@ -1,8 +1,8 @@
-// components/Seat/SeatMapModalDuffel.jsx
+// components/Seat/SeatMapModal.js
 "use client";
 import { useState } from "react";
 
-export default function SeatMapModalDuffel({
+export default function SeatMapModal({
   showSeatmap,
   setShowSeatmap,
   loadingSeatmap,
@@ -14,15 +14,20 @@ export default function SeatMapModalDuffel({
   onSeatSelect,
   onCompanionSelect,
   onConfirmSeat,
+  onClose,
 }) {
-  const [activeTab, setActiveTab] = useState("seatmap"); // "seatmap" or "companions"
-  const [filter, setFilter] = useState("all"); // "all", "adjacent", "same-row"
+  const [activeTab, setActiveTab] = useState("seatmap");
+  const [filter, setFilter] = useState("all");
 
   if (!showSeatmap) return null;
 
   const handleClose = () => {
-    setShowSeatmap(false);
-    setSelectedSeat(null);
+    if (onClose) {
+      onClose();
+    } else {
+      setShowSeatmap(false);
+      setSelectedSeat(null);
+    }
   };
 
   const handleSeatSelect = (seat) => {
@@ -34,17 +39,19 @@ export default function SeatMapModalDuffel({
   };
 
   // Filter companions based on seat availability
-  const filteredCompanions = companions.filter(companion => {
+  const filteredCompanions = companions.filter((companion) => {
     if (filter === "all") return true;
     if (filter === "adjacent") return companion.has_adjacent_vacant;
     if (filter === "same-row") return companion.seatAvailability?.sameRow;
     return true;
   });
 
-  // Sort companions by availability (adjacent first, then same row, then others)
+  // Sort companions by availability
   const sortedCompanions = [...filteredCompanions].sort((a, b) => {
-    const aScore = (a.has_adjacent_vacant ? 3 : 0) + (a.seatAvailability?.sameRow ? 2 : 0);
-    const bScore = (b.has_adjacent_vacant ? 3 : 0) + (b.seatAvailability?.sameRow ? 2 : 0);
+    const aScore =
+      (a.has_adjacent_vacant ? 3 : 0) + (a.seatAvailability?.sameRow ? 2 : 0);
+    const bScore =
+      (b.has_adjacent_vacant ? 3 : 0) + (b.seatAvailability?.sameRow ? 2 : 0);
     return bScore - aScore;
   });
 
@@ -53,12 +60,14 @@ export default function SeatMapModalDuffel({
       <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Select Your Seat & Find Companions</h2>
+            <h2 className="text-xl font-bold">
+              Select Your Seat & Find Companions
+            </h2>
             <button
               onClick={handleClose}
               className="text-gray-500 hover:text-gray-700 text-2xl"
             >
-              ✕
+              X
             </button>
           </div>
 
@@ -96,23 +105,25 @@ export default function SeatMapModalDuffel({
               {/* Seat Map Tab */}
               {activeTab === "seatmap" && (
                 <div>
-                  <SeatMapDuffel 
+                  <SeatMap
                     seatmapData={seatmapData}
                     selectedSeat={selectedSeat}
                     onSeatSelect={handleSeatSelect}
                     companions={companions}
                   />
-                  
+
                   <div className="mt-6 flex justify-between items-center">
                     <div>
                       {selectedSeat && (
                         <div className="bg-blue-50 p-3 rounded">
-                          <h4 className="font-semibold">Selected Seat: {selectedSeat.name}</h4>
-                          {selectedSeat.fee && (
-                            <p>Additional fee: ${selectedSeat.fee.amount} {selectedSeat.fee.currency}</p>
-                          )}
-                          {selectedSeat.amenities?.includes('extra_legroom') && (
-                            <p className="text-green-600">✅ Extra legroom</p>
+                          <h4 className="font-semibold">
+                            Selected Seat: {selectedSeat.designator || selectedSeat.number}
+                          </h4>
+                          {selectedSeat.travelerPricing?.[0]?.price && (
+                            <p>
+                              Fee: {selectedSeat.travelerPricing[0].price.currency}{" "}
+                              {selectedSeat.travelerPricing[0].price.total}
+                            </p>
                           )}
                         </div>
                       )}
@@ -143,8 +154,8 @@ export default function SeatMapModalDuffel({
                   <div className="flex gap-2 mb-4">
                     <button
                       className={`px-3 py-1 rounded-full text-sm ${
-                        filter === "all" 
-                          ? "bg-blue-100 text-blue-600 border border-blue-200" 
+                        filter === "all"
+                          ? "bg-blue-100 text-blue-600 border border-blue-200"
                           : "bg-gray-100 text-gray-600"
                       }`}
                       onClick={() => setFilter("all")}
@@ -153,8 +164,8 @@ export default function SeatMapModalDuffel({
                     </button>
                     <button
                       className={`px-3 py-1 rounded-full text-sm ${
-                        filter === "adjacent" 
-                          ? "bg-green-100 text-green-600 border border-green-200" 
+                        filter === "adjacent"
+                          ? "bg-green-100 text-green-600 border border-green-200"
                           : "bg-gray-100 text-gray-600"
                       }`}
                       onClick={() => setFilter("adjacent")}
@@ -163,8 +174,8 @@ export default function SeatMapModalDuffel({
                     </button>
                     <button
                       className={`px-3 py-1 rounded-full text-sm ${
-                        filter === "same-row" 
-                          ? "bg-purple-100 text-purple-600 border border-purple-200" 
+                        filter === "same-row"
+                          ? "bg-purple-100 text-purple-600 border border-purple-200"
                           : "bg-gray-100 text-gray-600"
                       }`}
                       onClick={() => setFilter("same-row")}
@@ -236,12 +247,12 @@ export default function SeatMapModalDuffel({
 function CompanionCard({ companion, isSelected, onSelect }) {
   const getAvailabilityBadge = (companion) => {
     if (companion.has_adjacent_vacant) {
-      return { text: "Adjacent Seats", color: "bg-green-100 text-green-800", badge: "💺💺" };
+      return { text: "Adjacent Seats", color: "bg-green-100 text-green-800" };
     }
     if (companion.seatAvailability?.sameRow) {
-      return { text: "Same Row", color: "bg-purple-100 text-purple-800", badge: "💺" };
+      return { text: "Same Row", color: "bg-purple-100 text-purple-800" };
     }
-    return { text: "Nearby", color: "bg-blue-100 text-blue-800", badge: "📍" };
+    return { text: "Nearby", color: "bg-blue-100 text-blue-800" };
   };
 
   const availability = getAvailabilityBadge(companion);
@@ -249,8 +260,8 @@ function CompanionCard({ companion, isSelected, onSelect }) {
   return (
     <div
       className={`border rounded-lg p-4 cursor-pointer transition-all ${
-        isSelected 
-          ? "border-blue-500 bg-blue-50 shadow-md" 
+        isSelected
+          ? "border-blue-500 bg-blue-50 shadow-md"
           : "border-gray-200 hover:border-blue-300 hover:shadow-sm"
       }`}
       onClick={() => onSelect(companion)}
@@ -261,97 +272,110 @@ function CompanionCard({ companion, isSelected, onSelect }) {
             {companion.full_name?.charAt(0) || "U"}
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">{companion.full_name}</h3>
+            <h3 className="font-semibold text-gray-900">
+              {companion.full_name}
+            </h3>
             <p className="text-sm text-gray-600">
-              Seat: {companion.current_seat} • Flight: {companion.bookings?.flight_number}
+              Seat: {companion.current_seat} - Flight:{" "}
+              {companion.bookings?.flight_number}
             </p>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2">
-          <span 
+          <span
             className={`px-3 py-1 rounded-full text-xs font-medium ${availability.color}`}
           >
-            <span className="mr-1">{availability.badge}</span>
             {availability.text}
           </span>
-          {isSelected && (
-            <span className="text-blue-500 text-xl">✓</span>
-          )}
+          {isSelected && <span className="text-blue-500 text-xl">Y</span>}
         </div>
       </div>
     </div>
   );
 }
 
-// Enhanced SeatMapDuffel Component with companion highlighting
-function SeatMapDuffel({ seatmapData, selectedSeat, onSeatSelect, companions }) {
-  // Create a map of companion seats for quick lookup - use current_seat from companion data
+// SeatMap Component for Amadeus format
+function SeatMap({ seatmapData, selectedSeat, onSeatSelect, companions }) {
+  // Create a map of companion seats for quick lookup
   const companionSeatsMap = {};
-  companions.forEach(companion => {
+  companions.forEach((companion) => {
     if (companion.current_seat) {
       companionSeatsMap[companion.current_seat] = companion;
     }
   });
 
-  // Your existing seatmap implementation with companion awareness
+  // Handle both Amadeus and mock seatmap formats
   if (!seatmapData || !seatmapData.data || seatmapData.data.length === 0) {
-    return <div className="text-center py-8 text-gray-500">No seatmap data available</div>;
+    return (
+      <div className="text-center py-8 text-gray-500">
+        No seatmap data available
+      </div>
+    );
   }
 
+  const seatmapInfo = seatmapData.data[0];
+  const decks = seatmapInfo.decks || [];
+
+  // For mock/Amadeus format - extract seats from decks
+  const allSeats = [];
+  decks.forEach((deck) => {
+    if (deck.seats) {
+      allSeats.push(...deck.seats);
+    }
+  });
+
+  // Group seats by row
+  const seatsByRow = {};
+  allSeats.forEach((seat) => {
+    const match = seat.number?.match(/(\d+)([A-Z])/);
+    if (match) {
+      const row = match[1];
+      if (!seatsByRow[row]) {
+        seatsByRow[row] = [];
+      }
+      seatsByRow[row].push(seat);
+    }
+  });
+
+  // Sort rows numerically
+  const sortedRows = Object.keys(seatsByRow).sort(
+    (a, b) => parseInt(a) - parseInt(b)
+  );
+
   const renderSeat = (seat) => {
-    const isSelected = selectedSeat?.id === seat.id;
-    const isAvailable = seat.available_services.includes('seat');
-    const hasFee = seat.fee;
-    
-    // Match companion seat by designator using current_seat field
-    const isCompanionSeat = companionSeatsMap[seat.designator];
-    
-    // Determine seat type and styling
-    let seatType = 'empty';
-    let seatClass = '';
-    let tooltipContent = '';
+    const isSelected = selectedSeat?.number === seat.number;
+    const pricing = seat.travelerPricing?.[0];
+    const isAvailable = pricing?.seatAvailabilityStatus === "AVAILABLE";
+    const isCompanionSeat = companionSeatsMap[seat.number];
+
+    let seatClass =
+      "w-10 h-10 rounded border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all ";
 
     if (isSelected) {
-      seatType = 'traveler';
-      seatClass = 'traveler-seat';
-      tooltipContent = 'This is your seat';
+      seatClass += "bg-blue-500 text-white border-blue-700";
     } else if (isCompanionSeat) {
-      seatType = 'companion';
-      seatClass = 'companion-seat';
-      tooltipContent = `${isCompanionSeat.full_name}\nSeat: ${seat.designator}\nFlight: ${isCompanionSeat.bookings?.flight_number}\nAirline: ${isCompanionSeat.bookings?.airline_name}`;
+      seatClass += "bg-purple-200 border-purple-500 cursor-default";
     } else if (isAvailable) {
-      seatType = 'empty';
-      seatClass = 'empty-seat';
-      tooltipContent = `Available seat: ${seat.designator}`;
+      seatClass += "bg-green-100 border-green-500 hover:bg-green-200";
     } else {
-      seatType = 'unavailable';
-      seatClass = 'unavailable-seat';
-      tooltipContent = 'Unavailable seat';
+      seatClass += "bg-gray-200 border-gray-400 cursor-not-allowed text-gray-400";
     }
-
-    // Check for adjacent badge (higher match potential)
-    const hasAdjacentBadge = isAvailable && !isSelected && !isCompanionSeat && isCompanionSeat?.has_adjacent_vacant;
 
     return (
       <div
-        key={seat.id}
-        className={`seat ${seatClass} ${isSelected ? 'selected' : ''} ${
-          isAvailable ? 'available' : 'unavailable'
-        } ${hasFee ? 'premium' : ''} tooltip-container`}
+        key={seat.number}
+        className={seatClass}
         onClick={() => isAvailable && !isCompanionSeat && onSeatSelect(seat)}
-        title={tooltipContent}
+        title={
+          isCompanionSeat
+            ? `Companion: ${isCompanionSeat.full_name}`
+            : isAvailable
+            ? `Seat ${seat.number} - ${pricing?.price?.currency || ""} ${pricing?.price?.total || "Free"}`
+            : "Unavailable"
+        }
       >
-        {seatType === 'companion' ? (
-          <div className="companion-icon">
-            <span className="profile-icon">👤</span>
-          </div>
-        ) : (
-          seat.designator
-        )}
-        {hasAdjacentBadge && (
-          <div className="adjacent-badge">💺</div>
-        )}
+        {isCompanionSeat ? "C" : seat.number?.replace(/^\d+/, "")}
       </div>
     );
   };
@@ -363,161 +387,97 @@ function SeatMapDuffel({ seatmapData, selectedSeat, onSeatSelect, companions }) 
         <h4 className="font-semibold mb-2">Seat Legend</h4>
         <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-500 rounded flex items-center justify-center text-white text-xs">A</div>
+            <div className="w-6 h-6 bg-blue-500 rounded flex items-center justify-center text-white text-xs">
+              A
+            </div>
             <span>Your Seat</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-purple-100 rounded flex items-center justify-center text-xs">👤</div>
+            <div className="w-6 h-6 bg-purple-200 rounded flex items-center justify-center text-xs border-2 border-purple-500">
+              C
+            </div>
             <span>Companion</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-gray-200 rounded flex items-center justify-center text-xs">💺</div>
-            <span>Adjacent Available</span>
+            <div className="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-xs border-2 border-green-500">
+              A
+            </div>
+            <span>Available</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-gray-300 rounded flex items-center justify-center text-xs">A</div>
-            <span>Empty Seat</span>
+            <div className="w-6 h-6 bg-gray-200 rounded flex items-center justify-center text-xs border-2 border-gray-400">
+              X
+            </div>
+            <span>Unavailable</span>
           </div>
         </div>
       </div>
 
-      {seatmapData.data.map((seatMap, index) => (
-        <div key={seatMap.id || index} className="aircraft-seatmap">
-          <div className="aircraft-info mb-4 p-3 bg-gray-50 rounded">
-            <strong className="block">{seatMap.aircraft?.name}</strong>
-            <span className="text-sm text-gray-600">Class: {seatMap.cabins?.[0]?.cabin_class}</span>
-          </div>
-          
-          <div className="cabins-container">
-            {seatMap.cabins?.map((cabin, cabinIndex) => (
-              <div key={cabinIndex} className="cabin mb-6">
-                <div className="cabin-header mb-3">
-                  <h4 className="font-semibold text-lg">{cabin.name}</h4>
-                  {cabin.wings && (
-                    <div className="text-sm text-gray-500">
-                      Wings: Rows {cabin.wings.start_row}-{cabin.wings.end_row}
-                    </div>
-                  )}
-                </div>
-                
-                <div className="seats-grid">
-                  {cabin.seats?.map(renderSeat)}
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Aircraft Info */}
+      <div className="aircraft-info mb-4 p-3 bg-gray-50 rounded">
+        <strong className="block">
+          {seatmapInfo.aircraft?.name || seatmapInfo.aircraft?.code || "Aircraft"}
+        </strong>
+        <span className="text-sm text-gray-600">
+          {seatmapInfo.departure?.iataCode} - {seatmapInfo.arrival?.iataCode}
+        </span>
+      </div>
+
+      {/* Seat Grid */}
+      <div className="seats-container bg-gray-100 p-4 rounded-lg">
+        {/* Column Headers */}
+        <div className="flex justify-center gap-2 mb-2">
+          <div className="w-10 text-center font-bold">A</div>
+          <div className="w-10 text-center font-bold">B</div>
+          <div className="w-10 text-center font-bold">C</div>
+          <div className="w-4"></div>
+          <div className="w-10 text-center font-bold">D</div>
+          <div className="w-10 text-center font-bold">E</div>
+          <div className="w-10 text-center font-bold">F</div>
         </div>
-      ))}
-      
-      <style jsx>{`
-        .seats-grid {
-          display: grid;
-          grid-template-columns: repeat(6, 1fr);
-          gap: 8px;
-          padding: 20px;
-          background: #f9f9f9;
-          border-radius: 8px;
-        }
-        .seat {
-          width: 40px;
-          height: 40px;
-          border: 2px solid #ccc;
-          border-radius: 4px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          font-size: 0.8em;
-          font-weight: bold;
-          transition: all 0.2s;
-          position: relative;
-        }
-        .seat.available {
-          background: #e8f5e8;
-          border-color: #4caf50;
-        }
-        .seat.available:hover {
-          background: #c8e6c9;
-          transform: scale(1.1);
-        }
-        .seat.selected {
-          background: #2196f3;
-          color: white;
-          border-color: #1976d2;
-        }
-        .seat.premium {
-          background: #fff3e0;
-          border-color: #ff9800;
-        }
-        .seat.unavailable {
-          background: #f5f5f5;
-          border-color: #ccc;
-          color: #999;
-          cursor: not-allowed;
-        }
-        
-        /* New seat type styles */
-        .traveler-seat {
-          background: #2196f3 !important;
-          color: white !important;
-          border-color: #1976d2 !important;
-        }
-        .companion-seat {
-          background: #e1bee7 !important;
-          border-color: #8e24aa !important;
-          cursor: default;
-        }
-        .empty-seat {
-          background: #bdbdbd !important;
-          border-color: #757575 !important;
-        }
-        
-        .companion-icon {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-          height: 100%;
-        }
-        .profile-icon {
-          font-size: 1.2em;
-        }
-        .adjacent-badge {
-          position: absolute;
-          top: -5px;
-          right: -5px;
-          background: #4caf50;
-          color: white;
-          border-radius: 50%;
-          width: 16px;
-          height: 16px;
-          font-size: 0.6em;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        
-        /* Tooltip styles */
-        .tooltip-container {
-          position: relative;
-        }
-        .tooltip-container:hover::after {
-          content: attr(title);
-          position: absolute;
-          bottom: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          background: rgba(0, 0, 0, 0.8);
-          color: white;
-          padding: 8px;
-          border-radius: 4px;
-          font-size: 0.8em;
-          white-space: pre-line;
-          z-index: 1000;
-          min-width: 200px;
-          text-align: center;
-        }
-      `}</style>
+
+        {/* Rows */}
+        {sortedRows.map((rowNum) => {
+          const rowSeats = seatsByRow[rowNum].sort((a, b) => {
+            const aLetter = a.number?.replace(/\d+/, "") || "";
+            const bLetter = b.number?.replace(/\d+/, "") || "";
+            return aLetter.localeCompare(bLetter);
+          });
+
+          return (
+            <div key={rowNum} className="flex justify-center gap-2 mb-2 items-center">
+              {/* Left side seats (A, B, C) */}
+              {["A", "B", "C"].map((col) => {
+                const seat = rowSeats.find(
+                  (s) => s.number === `${rowNum}${col}`
+                );
+                return seat ? (
+                  renderSeat(seat)
+                ) : (
+                  <div key={`${rowNum}${col}`} className="w-10 h-10"></div>
+                );
+              })}
+
+              {/* Aisle with row number */}
+              <div className="w-8 text-center text-gray-500 font-medium">
+                {rowNum}
+              </div>
+
+              {/* Right side seats (D, E, F) */}
+              {["D", "E", "F"].map((col) => {
+                const seat = rowSeats.find(
+                  (s) => s.number === `${rowNum}${col}`
+                );
+                return seat ? (
+                  renderSeat(seat)
+                ) : (
+                  <div key={`${rowNum}${col}`} className="w-10 h-10"></div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

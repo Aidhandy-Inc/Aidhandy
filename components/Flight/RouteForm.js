@@ -1,7 +1,7 @@
 import Card from "../common/Card";
 import InputField from "../common/InputField";
 
-export default function RouteForm({ flightData, setFlightData, handleSubmit, submitting, setSelectedPath, userRole }) {
+export default function RouteForm({ flightData, setFlightData, handleSubmit, handleSearchFlights, submitting, setSelectedPath, userRole }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -47,21 +47,24 @@ export default function RouteForm({ flightData, setFlightData, handleSubmit, sub
           required
         />
 
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-3">
+        {userRole !== "companion" && (
+          <button
+            type="submit"
+            className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
+            disabled={submitting}
+          >
+            {submitting ? "Checking..." : "Find Companions"}
+          </button>
+        )}
         <button
-          type="submit"
-          className="flex-1 bg-green-600 text-white p-2 rounded hover:bg-green-700"
-          disabled={submitting}
-        >
-          {submitting ? "Checking..." : userRole === (null || undefined) ? "Find Companions" : userRole === "companion" ? "Find Flights" : "Find Companions" }
-        </button>
-        {/* <button
           type="button"
-          className="flex-1 bg-gray-400 text-white p-2 rounded hover:bg-gray-500"
-          onClick={() => setSelectedPath(null)}
+          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+          disabled={submitting}
+          onClick={handleSearchFlights}
         >
-          Change Path
-        </button> */}
+          {submitting ? "Searching..." : "Search Flights"}
+        </button>
       </div>
       </Card>
     </form>

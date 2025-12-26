@@ -68,7 +68,7 @@ serve(async (req) => {
         const offerId = session.metadata?.offer_id;
 
         if (userId && offerId) {
-          // Find and update booking by offer_id (stored in duffel_order_id or metadata)
+          // Find and update booking by offer_id
           const { data: bookings, error: fetchError } = await supabase
             .from("bookings")
             .select("id")
