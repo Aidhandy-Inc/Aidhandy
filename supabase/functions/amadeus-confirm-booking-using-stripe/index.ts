@@ -1,3 +1,4 @@
+// supabase/functions/amadeus-confirm-booking-using-stripe/index.ts
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@12.18.0?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -34,7 +35,7 @@ serve(async (req) => {
         headers: corsHeaders,
       });
 
-    // 🧾 Parse body
+    // Parse body
     const { selectedFlight, profile } = await req.json();
     if (!selectedFlight || !profile?.email)
       return new Response(JSON.stringify({ error: "Missing data" }), {
@@ -42,15 +43,28 @@ serve(async (req) => {
         headers: corsHeaders,
       });
 
-    // 💳 Initialize Stripe
+    // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
       apiVersion: "2023-10-16",
     });
 
-    const amount = Math.round(Number(selectedFlight?.total_amount || 100) * 100);
-    const currency = selectedFlight?.total_currency || "usd";
+    // Calculate amount from Amadeus flight offer format
+    const price = selectedFlight?.price || selectedFlight?.travelerPricings?.[0]?.price;
+    const amount = Math.round(
+      Number(price?.total || price?.grandTotal || selectedFlight?.total_amount || 100) * 100
+    );
+    const currency = (price?.currency || selectedFlight?.total_currency || "usd").toLowerCase();
 
-    // ✅ Create a Stripe Checkout Session
+    // Get flight details for description
+    const itinerary = selectedFlight?.itineraries?.[0];
+    const firstSegment = itinerary?.segments?.[0];
+    const lastSegment = itinerary?.segments?.[itinerary.segments.length - 1];
+
+    const flightDescription = firstSegment
+      ? `${firstSegment.departure?.iataCode} to ${lastSegment?.arrival?.iataCode} - ${firstSegment.carrierCode}${firstSegment.number}`
+      : `Flight Booking`;
+
+    // Create a Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
@@ -59,8 +73,8 @@ serve(async (req) => {
           price_data: {
             currency,
             product_data: {
-              name: `Flight Booking (${selectedFlight.id})`,
-              description: `Duffel flight booking for ${profile.email}`,
+              name: `Flight Booking`,
+              description: `${flightDescription} for ${profile.email}`,
             },
             unit_amount: amount,
           },
@@ -69,20 +83,28 @@ serve(async (req) => {
       ],
       customer_email: profile.email,
       metadata: {
-        offer_id: selectedFlight.id,
+        flight_offer_id: selectedFlight.id,
         user_id: user.id,
+        departure: firstSegment?.departure?.iataCode || "",
+        arrival: lastSegment?.arrival?.iataCode || "",
+        flight_date: firstSegment?.departure?.at?.split("T")[0] || "",
+        carrier: firstSegment?.carrierCode || "",
+        flight_number: firstSegment?.number || "",
       },
       success_url: `${Deno.env.get("NEXTAUTH_URL")}/stripe/flight-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${Deno.env.get("NEXTAUTH_URL")}/stripe/flight-cancelled`,
     });
 
-    // ✅ Return the checkout session URL to redirect frontend
+    // Return the checkout session URL to redirect frontend
     return new Response(
       JSON.stringify({
         url: session.url,
         message: "Stripe Checkout session created successfully",
       }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
     );
   } catch (err) {
     console.error("Error creating Stripe Checkout session:", err);
