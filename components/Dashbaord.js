@@ -359,8 +359,9 @@ const Dashboard = () => {
                             <div className="flex gap-1">
                               <button
                                 onClick={() => handleApproveCompanion(companion.id)}
-                                disabled={actionLoading === companion.id}
-                                className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                                disabled={actionLoading === companion.id || !companion.stripe_charges_enabled}
+                                title={!companion.stripe_charges_enabled ? "Stripe onboarding not complete" : ""}
+                                className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                 Approve
                               </button>
