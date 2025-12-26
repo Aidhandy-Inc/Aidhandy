@@ -22,10 +22,12 @@ jobs:
         run: npm ci
 
       - name: Run linting
-        run: npm run lint || echo "No lint script - skipping"
+        run: npm run lint || true
+        continue-on-error: true
 
       - name: Run tests
-        run: npm test || echo "No tests - skipping"
+        run: npm test || true
+        continue-on-error: true
 
       - name: Build verification
         run: npm run build
