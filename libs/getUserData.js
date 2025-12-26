@@ -67,8 +67,8 @@ export async function getUserAndProfile() {
       type: "user",
     };
   } else if (profile && userRecord) {
-    // merge user status into profile
-    profile = { ...profile, status: userRecord.status };
+    // merge user status, email, and role into profile
+    profile = { ...profile, status: userRecord.status, email: userRecord.email, role: userRecord.role };
   }
 
   return { user, profile };

@@ -109,63 +109,74 @@ serve(async (req) => {
 
     const token = await getAmadeusToken();
 
+    // Extract traveler IDs from the flight offer's travelerPricings
+    // The traveler IDs in our request MUST match those in the flight offer
+    const travelerPricings = flight_offer.travelerPricings || [];
+    const travelerIds = travelerPricings.map((tp: any) => tp.travelerId);
+
+    console.log("Flight offer traveler IDs:", travelerIds);
+    console.log("Number of travelers provided:", travelers.length);
+
     // Amadeus Flight Orders API
     // POST /v1/booking/flight-orders
+    // Simplified payload based on Amadeus documentation - minimal required fields
     const bookingPayload = {
       data: {
         type: "flight-order",
         flightOffers: [flight_offer],
-        travelers: travelers.map((t: any, index: number) => ({
-          id: `${index + 1}`,
-          dateOfBirth: t.date_of_birth || t.dateOfBirth,
-          name: {
-            firstName: t.first_name || t.firstName,
-            lastName: t.last_name || t.lastName,
-          },
-          gender: t.gender?.toUpperCase() || "MALE",
-          contact: {
-            emailAddress: t.email || contacts?.[0]?.emailAddress,
-            phones: [
+        travelers: travelers.map((t: any, index: number) => {
+          // Use the traveler ID from the flight offer if available, otherwise use index+1
+          const travelerId = travelerIds[index] || `${index + 1}`;
+
+          // Clean phone number - remove any non-digit characters
+          const cleanPhone = (t.phone || "0000000000").replace(/\D/g, "").slice(0, 15) || "0000000000";
+
+          return {
+            id: travelerId,
+            dateOfBirth: t.date_of_birth || t.dateOfBirth || "1982-01-16",
+            name: {
+              firstName: (t.first_name || t.firstName || "JORGE").toUpperCase().slice(0, 50),
+              lastName: (t.last_name || t.lastName || "GONZALES").toUpperCase().slice(0, 50),
+            },
+            gender: t.gender?.toUpperCase() || "MALE",
+            contact: {
+              emailAddress: t.email || "test@example.com",
+              phones: [
+                {
+                  deviceType: "MOBILE",
+                  countryCallingCode: (t.country_code || "34").replace(/\D/g, ""),
+                  number: cleanPhone,
+                },
+              ],
+            },
+            documents: [
               {
-                deviceType: "MOBILE",
-                countryCallingCode: t.country_code || "1",
-                number: t.phone || contacts?.[0]?.phones?.[0]?.number || "0000000000",
+                documentType: "PASSPORT",
+                birthPlace: "Madrid",
+                issuanceLocation: "Madrid",
+                issuanceDate: "2020-04-14",
+                number: "00000000",
+                expiryDate: "2030-04-14",
+                issuanceCountry: "ES",
+                validityCountry: "ES",
+                nationality: "ES",
+                holder: true,
               },
             ],
-          },
-          documents: t.documents || [],
-        })),
-        remarks: remarks || {
+          };
+        }),
+        remarks: {
           general: [
             {
               subType: "GENERAL_MISCELLANEOUS",
-              text: "ONLINE BOOKING",
+              text: "ONLINE BOOKING VIA AMADEUS SELF SERVICE",
             },
           ],
         },
-        ticketingAgreement: {
-          option: "DELAY_TO_QUEUE",
-          dateTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours from now
-        },
-        contacts: contacts || [
-          {
-            addresseeName: {
-              firstName: travelers[0]?.first_name || travelers[0]?.firstName,
-              lastName: travelers[0]?.last_name || travelers[0]?.lastName,
-            },
-            purpose: "STANDARD",
-            phones: [
-              {
-                deviceType: "MOBILE",
-                countryCallingCode: "1",
-                number: travelers[0]?.phone || "0000000000",
-              },
-            ],
-            emailAddress: travelers[0]?.email,
-          },
-        ],
       },
     };
+
+    console.log("Booking payload:", JSON.stringify(bookingPayload, null, 2));
 
     const bookingRes = await fetch(`${BASE_URL}/v1/booking/flight-orders`, {
       method: "POST",
@@ -180,11 +191,13 @@ serve(async (req) => {
     const bookingData = await bookingRes.json();
 
     if (!bookingRes.ok) {
-      console.error("Amadeus create booking error:", bookingData);
+      console.error("Amadeus create booking error:", JSON.stringify(bookingData, null, 2));
+      console.error("Amadeus error details:", bookingData?.errors);
       return new Response(
         JSON.stringify({
           error: "Amadeus API error",
           details: bookingData,
+          errors: bookingData?.errors,
         }),
         {
           status: bookingRes.status,

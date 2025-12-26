@@ -48,7 +48,36 @@ export default function FlightSuccess() {
           stopDescription,
         } = pendingBooking;
 
-        // 3. Create Amadeus booking (after Stripe success)
+        // 3. Re-price the flight offer first (flight offers expire quickly)
+        setStatus("Confirming flight availability and price...");
+        const priceRes = await fetch(
+          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/amadeus-price-offer`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${supabaseToken}`,
+            },
+            body: JSON.stringify({
+              flight_offer: selectedFlight,
+            }),
+          }
+        );
+
+        const priceResponse = await priceRes.json();
+
+        // Use the re-priced flight offer if available, otherwise fall back to original
+        let flightOfferToBook = selectedFlight;
+        if (priceRes.ok && priceResponse.success && priceResponse.data) {
+          console.log("Flight offer re-priced successfully:", priceResponse);
+          flightOfferToBook = priceResponse.data;
+        } else {
+          console.warn("Could not re-price flight offer, using original:", priceResponse);
+          // Continue with original offer - it may still work
+        }
+
+        // 4. Create Amadeus booking (after Stripe success)
+        setStatus("Creating your booking...");
         const createOrderRes = await fetch(
           `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/amadeus-create-booking`,
           {
@@ -58,7 +87,7 @@ export default function FlightSuccess() {
               Authorization: `Bearer ${supabaseToken}`,
             },
             body: JSON.stringify({
-              flight_offer: selectedFlight,
+              flight_offer: flightOfferToBook,
               travelers: [
                 {
                   first_name: profile.full_name?.split(" ")[0] || profile.first_name || "Traveller",
@@ -88,7 +117,7 @@ export default function FlightSuccess() {
         console.log("Amadeus order:", order);
         setStatus(`Booking created (Ref: ${pnr || bookingReference})`);
 
-        // 4. Extract segment details from Amadeus format
+        // 5. Extract segment details from Amadeus format
         const itinerary = order?.itineraries?.[0] || selectedFlight.itineraries?.[0];
         const segments = itinerary?.segments || [];
         const firstSegment = segments[0];
@@ -116,7 +145,7 @@ export default function FlightSuccess() {
           created_at: new Date().toISOString(),
         };
 
-        // 5. Store in Supabase
+        // 6. Store in Supabase
         const { data: bookingData, error: bookingError } = await supabase
           .from("bookings")
           .insert([booking])
@@ -124,7 +153,7 @@ export default function FlightSuccess() {
 
         if (bookingError) throw bookingError;
 
-        // 6. Update pairing if applicable
+        // 7. Update pairing if applicable
         if (pairingId) {
           await supabase
             .from("pairings")
@@ -135,7 +164,7 @@ export default function FlightSuccess() {
             .eq("id", pairingId);
         }
 
-        // 7. Send booking confirmation email
+        // 8. Send booking confirmation email
         try {
           await supabase.functions.invoke("send-booking-confirmation-email", {
             body: {

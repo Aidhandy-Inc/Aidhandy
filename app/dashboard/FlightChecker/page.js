@@ -56,6 +56,9 @@ export default function FlightChecker() {
   const handleSearchFlights = async (e) => {
     e?.preventDefault();
     setSubmitting(true);
+    // Clear any previous companion error state
+    setErrorOpen(false);
+    setIsCompanionListError(false);
     try {
       let supabaseToken;
       const {
@@ -554,22 +557,16 @@ export default function FlightChecker() {
   };
   // if (loading) return <LoadingState />;
   // if (!profile) return <p>You must be logged in to check flights.</p>;
+
+  const hasFlightResults = response && response.data && response.data.length > 0;
+
   return (
     <>
       {submitting && <Loader />}
       <BackButton text="Back" className="text-black" />
-      <div
-        className={`max-w-xl mx-auto rounded  ${
-          !selectedPath
-            ? "h-screen flex flex-col justify-center"
-            : " h-screen flex flex-col justify-center mt-10"
-        } ${
-          selectedPath === 1
-            ? " "
-            : "h-screen flex flex-col justify-center !shadow-none"
-        }`}
-      >
-        <h1 className="text-2xl font-bold mb-6 text-center">Flight Checker</h1>
+      <div className="w-full px-4 py-6">
+        <div className="max-w-7xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">Flight Checker</h1>
         {!selectedPath && <PathSelector setSelectedPath={setSelectedPath} />}
         {selectedPath === 1 && (
           <>
@@ -589,13 +586,15 @@ export default function FlightChecker() {
         )}
         {selectedPath === 2 && (
           <>
-            <BackButton
-              text="Back"
-              path={"/dashboard/FlightChecker"}
-              selected={selectedPath === 2}
-              setSelectedPath={setSelectedPath}
-              className="text-black"
-            />
+            {!hasFlightResults && (
+              <BackButton
+                text="Back"
+                path={"/dashboard/FlightChecker"}
+                selected={selectedPath === 2}
+                setSelectedPath={setSelectedPath}
+                className="text-black"
+              />
+            )}
             <RouteForm
               userRole={profile?.type}
               flightData={flightData}
@@ -604,11 +603,13 @@ export default function FlightChecker() {
               handleSearchFlights={handleSearchFlights}
               submitting={submitting}
               setSelectedPath={setSelectedPath}
+              hasResults={hasFlightResults}
+              onModifySearch={() => setResponse(null)}
             />
           </>
         )}
         {/* Amadeus Flight List */}
-        {response && response.data && response.data.length > 0 && (
+        {hasFlightResults && (
           <AmadeusFlightList
             offers={response.data}
             dictionaries={response.dictionaries}
@@ -660,6 +661,7 @@ export default function FlightChecker() {
             onClose={() => setErrorOpen(false)}
           />
         )}
+        </div>
       </div>
     </>
   );
