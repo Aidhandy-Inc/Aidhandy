@@ -29,46 +29,46 @@ export async function getUserAndProfile() {
     return { user: null, profile: null };
   }
 
-  let profile = null;
-
-  // First, try to find in travellers
-  const { data: traveller, error: travellerError } = await supabase
-    .from("travellers")
-    .select("*")
-    .eq("user_id", user.id)
-    .single();
-
-  if (traveller && !travellerError) {
-    profile = { ...traveller, type: "traveller" };
-  } else {
-    // If not found, try companions
-    const { data: companion, error: companionError } = await supabase
-      .from("companions")
-      .select("*")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (companion && !companionError) {
-      profile = { ...companion, type: "companion" };
-    }
-  }
-
-  // Always fetch user status from users table
-  const { data: userRecord, error: userRecordError } = await supabase
+  // Get user info from users table first (source of truth for role, status, email)
+  const { data: userRecord } = await supabase
     .from("users")
     .select("status, email, role")
     .eq("id", user.id)
     .single();
 
-  // If no traveller/companion profile found yet, still build a fallback profile from user record
-  if (!profile && userRecord) {
-    profile = {
-      ...userRecord,
-      type: "user",
-    };
-  } else if (profile && userRecord) {
-    // merge user status, email, and role into profile
-    profile = { ...profile, status: userRecord.status, email: userRecord.email, role: userRecord.role };
+  if (!userRecord) {
+    return { user, profile: null };
+  }
+
+  // Base profile from users table
+  let profile = {
+    status: userRecord.status,
+    email: userRecord.email,
+    role: userRecord.role,
+    type: "user",
+  };
+
+  // For non-admin users, get additional profile data from travellers/companions
+  if (userRecord.role !== "admin") {
+    const { data: traveller } = await supabase
+      .from("travellers")
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (traveller) {
+      profile = { ...profile, ...traveller, type: "traveller" };
+    } else {
+      const { data: companion } = await supabase
+        .from("companions")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (companion) {
+        profile = { ...profile, ...companion, type: "companion" };
+      }
+    }
   }
 
   return { user, profile };
