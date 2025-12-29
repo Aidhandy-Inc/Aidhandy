@@ -65,10 +65,11 @@ serve(async (req) => {
 
         // Get metadata from session
         const userId = session.metadata?.user_id;
-        const offerId = session.metadata?.offer_id;
+        const companionId = session.metadata?.companion_id;
+        const platformFee = session.metadata?.platform_fee;
 
-        if (userId && offerId) {
-          // Find and update booking by offer_id
+        if (userId) {
+          // Find and update booking
           const { data: bookings, error: fetchError } = await supabase
             .from("bookings")
             .select("id")
@@ -79,18 +80,81 @@ serve(async (req) => {
           if (fetchError) {
             console.error("Error fetching booking:", fetchError);
           } else if (bookings && bookings.length > 0) {
+            const bookingId = bookings[0].id;
+
+            // Update booking status
             const { error: updateError } = await supabase
               .from("bookings")
               .update({
                 status: "confirmed",
                 updated_at: new Date().toISOString(),
               })
-              .eq("id", bookings[0].id);
+              .eq("id", bookingId);
 
             if (updateError) {
               console.error("Error updating booking status:", updateError);
             } else {
-              console.log("Booking confirmed:", bookings[0].id);
+              console.log("Booking confirmed:", bookingId);
+            }
+
+            // Create payout record for companion if applicable
+            if (companionId && session.amount_total) {
+              const platformFeeAmount = platformFee ? parseInt(platformFee) : 0;
+              const companionAmount = session.amount_total - platformFeeAmount;
+
+              // Create payout record (payment will be auto-transferred via Stripe Connect)
+              const { error: payoutError } = await supabase
+                .from("payouts")
+                .insert({
+                  booking_id: bookingId,
+                  amount: companionAmount / 100, // Convert from cents
+                  currency: session.currency?.toUpperCase() || "USD",
+                  payment_status: "pending", // Will be updated when transfer completes
+                  payment_method: "stripe_connect",
+                });
+
+              if (payoutError) {
+                console.error("Error creating payout record:", payoutError);
+              } else {
+                console.log("Payout record created for booking:", bookingId);
+              }
+            }
+          }
+        }
+        break;
+      }
+
+      case "transfer.created": {
+        // Handle transfer to connected account (companion payout)
+        const transfer = event.data.object as Stripe.Transfer;
+        console.log("Transfer created:", transfer.id);
+
+        // Update payout record
+        if (transfer.destination) {
+          // Find companion by stripe account id
+          const { data: companion } = await supabase
+            .from("companions")
+            .select("id")
+            .eq("stripe_account_id", transfer.destination)
+            .single();
+
+          if (companion) {
+            // Update related payout to paid
+            const { error: updateError } = await supabase
+              .from("payouts")
+              .update({
+                payment_status: "paid",
+                paid_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              })
+              .eq("payment_status", "pending")
+              .order("created_at", { ascending: false })
+              .limit(1);
+
+            if (updateError) {
+              console.error("Error updating payout status:", updateError);
+            } else {
+              console.log("Payout marked as paid for companion:", companion.id);
             }
           }
         }
@@ -126,18 +190,36 @@ serve(async (req) => {
                 .limit(1);
 
               if (!fetchError && bookings && bookings.length > 0) {
+                const bookingId = bookings[0].id;
+
+                // Update booking status
                 const { error: updateError } = await supabase
                   .from("bookings")
                   .update({
                     status: "refunded",
                     updated_at: new Date().toISOString(),
                   })
-                  .eq("id", bookings[0].id);
+                  .eq("id", bookingId);
 
                 if (updateError) {
                   console.error("Error updating booking to refunded:", updateError);
                 } else {
-                  console.log("Booking refunded:", bookings[0].id);
+                  console.log("Booking refunded:", bookingId);
+                }
+
+                // Update payout status to refunded
+                const { error: payoutError } = await supabase
+                  .from("payouts")
+                  .update({
+                    payment_status: "refunded",
+                    updated_at: new Date().toISOString(),
+                  })
+                  .eq("booking_id", bookingId);
+
+                if (payoutError) {
+                  console.error("Error updating payout to refunded:", payoutError);
+                } else {
+                  console.log("Payout marked as refunded for booking:", bookingId);
                 }
               }
             }

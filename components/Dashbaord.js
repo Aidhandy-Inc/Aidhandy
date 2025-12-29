@@ -15,6 +15,8 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("bookings");
   const [actionLoading, setActionLoading] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [refundModal, setRefundModal] = useState({ open: false, booking: null });
+  const [refundReason, setRefundReason] = useState("");
 
   useEffect(() => {
     const tabParam = searchParams.get("tab");
@@ -133,6 +135,42 @@ const Dashboard = () => {
     } catch (error) {
       console.error("Error updating booking status:", error);
       alert("Failed to update booking status.");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleRefund = async (bookingId) => {
+    setActionLoading(bookingId);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+
+      const response = await fetch("/api/admin/refund", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          bookingId,
+          reason: refundReason || "Admin initiated refund",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Refund failed");
+      }
+
+      alert("Refund processed successfully");
+      setRefundModal({ open: false, booking: null });
+      setRefundReason("");
+      await fetchAllData();
+    } catch (error) {
+      console.error("Error processing refund:", error);
+      alert(`Refund failed: ${error.message}`);
     } finally {
       setActionLoading(null);
     }
@@ -287,6 +325,15 @@ const Dashboard = () => {
                                 Cancel
                               </button>
                             )}
+                            {booking.status === "confirmed" && (
+                              <button
+                                onClick={() => setRefundModal({ open: true, booking })}
+                                disabled={actionLoading === booking.id}
+                                className="px-2 py-1 text-xs bg-amber-600 text-white rounded hover:bg-amber-700 disabled:opacity-50"
+                              >
+                                Refund
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -300,6 +347,49 @@ const Dashboard = () => {
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* Refund Modal */}
+        {refundModal.open && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Process Refund</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Are you sure you want to refund booking for flight{" "}
+                <strong>{refundModal.booking?.flight_number}</strong>?
+              </p>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Reason (optional)
+                </label>
+                <textarea
+                  value={refundReason}
+                  onChange={(e) => setRefundReason(e.target.value)}
+                  placeholder="Enter refund reason..."
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-400"
+                  rows={3}
+                />
+              </div>
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={() => {
+                    setRefundModal({ open: false, booking: null });
+                    setRefundReason("");
+                  }}
+                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleRefund(refundModal.booking?.id)}
+                  disabled={actionLoading === refundModal.booking?.id}
+                  className="px-4 py-2 text-sm bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50"
+                >
+                  {actionLoading === refundModal.booking?.id ? "Processing..." : "Confirm Refund"}
+                </button>
+              </div>
             </div>
           </div>
         )}
