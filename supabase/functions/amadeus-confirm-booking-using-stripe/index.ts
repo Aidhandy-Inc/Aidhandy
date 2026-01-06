@@ -9,6 +9,9 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+// Platform fee percentage (10%)
+const PLATFORM_FEE_PERCENT = 10;
+
 serve(async (req) => {
   if (req.method === "OPTIONS")
     return new Response("ok", { headers: corsHeaders });
@@ -36,7 +39,7 @@ serve(async (req) => {
       });
 
     // Parse body
-    const { selectedFlight, profile } = await req.json();
+    const { selectedFlight, profile, companionId } = await req.json();
     if (!selectedFlight || !profile?.email)
       return new Response(JSON.stringify({ error: "Missing data" }), {
         status: 400,
@@ -64,8 +67,26 @@ serve(async (req) => {
       ? `${firstSegment.departure?.iataCode} to ${lastSegment?.arrival?.iataCode} - ${firstSegment.carrierCode}${firstSegment.number}`
       : `Flight Booking`;
 
-    // Create a Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    // Check if companion is assigned and has Stripe Connect account
+    let connectedAccountId: string | null = null;
+    let applicationFeeAmount: number | null = null;
+
+    if (companionId) {
+      const { data: companion } = await supabaseAdmin
+        .from("companions")
+        .select("stripe_account_id, stripe_charges_enabled")
+        .eq("id", companionId)
+        .single();
+
+      if (companion?.stripe_account_id && companion?.stripe_charges_enabled) {
+        connectedAccountId = companion.stripe_account_id;
+        // Calculate platform fee (10% of total)
+        applicationFeeAmount = Math.round(amount * (PLATFORM_FEE_PERCENT / 100));
+      }
+    }
+
+    // Build checkout session config
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
       payment_method_types: ["card"],
       line_items: [
@@ -90,16 +111,32 @@ serve(async (req) => {
         flight_date: firstSegment?.departure?.at?.split("T")[0] || "",
         carrier: firstSegment?.carrierCode || "",
         flight_number: firstSegment?.number || "",
+        companion_id: companionId || "",
+        platform_fee: applicationFeeAmount?.toString() || "",
       },
       success_url: `${Deno.env.get("NEXTAUTH_URL")}/stripe/flight-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${Deno.env.get("NEXTAUTH_URL")}/stripe/flight-cancelled`,
-    });
+    };
+
+    // Add payment_intent_data with transfer if companion has connected account
+    if (connectedAccountId && applicationFeeAmount) {
+      sessionConfig.payment_intent_data = {
+        application_fee_amount: applicationFeeAmount,
+        transfer_data: {
+          destination: connectedAccountId,
+        },
+      };
+    }
+
+    // Create a Stripe Checkout Session
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     // Return the checkout session URL to redirect frontend
     return new Response(
       JSON.stringify({
         url: session.url,
         message: "Stripe Checkout session created successfully",
+        platformFee: applicationFeeAmount ? applicationFeeAmount / 100 : null,
       }),
       {
         status: 200,
