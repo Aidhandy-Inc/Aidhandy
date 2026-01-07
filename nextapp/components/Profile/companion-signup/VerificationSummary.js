@@ -195,7 +195,7 @@ export const VerificationSummary = ({ formData, profilePhoto }) => {
       {/* Action Buttons */}
       <div className="flex items-center justify-center pt-6 border-t border-slate-200">
         <p className="text-lg text-black font-semibold text-center">
-          AidHandy partner's with Stripe to verify your identity and enable secure payouts
+          AidHandy partner&apos;s with Stripe to verify your identity and enable secure payouts
         </p>
       </div>
     </div>

@@ -339,7 +339,7 @@ function LoginContent() {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm text-[#1d9fd8]">
-                    We'll send you a magic link to sign in. No password needed!
+                    We&apos;ll send you a magic link to sign in. No password needed!
                   </p>
                 </div>
               </div>

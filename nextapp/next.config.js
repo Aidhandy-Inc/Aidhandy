@@ -14,6 +14,8 @@ const nextConfig = {
     workerThreads: false,
     cpus: 1,
   },
+  // Fix workspace root warning
+  outputFileTracingRoot: require('path').join(__dirname),
 };
 
 module.exports = nextConfig;
