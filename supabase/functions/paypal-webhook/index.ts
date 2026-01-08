@@ -1,15 +1,20 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import crypto from "crypto";
+// supabase/functions/paypal-webhook/index.ts
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const PAYPAL_API_URL = process.env.PAYPAL_API_URL || "https://api-m.sandbox.paypal.com";
-const CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
-const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
-const PAYPAL_WEBHOOK_ID = process.env.PAYPAL_WEBHOOK_ID;
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, paypal-auth-algo, paypal-cert-url, paypal-transmission-id, paypal-transmission-sig, paypal-transmission-time",
+};
+
+const PAYPAL_API_URL = Deno.env.get("PAYPAL_API_URL") || "https://api-m.sandbox.paypal.com";
+const CLIENT_ID = Deno.env.get("PAYPAL_CLIENT_ID");
+const CLIENT_SECRET = Deno.env.get("PAYPAL_CLIENT_SECRET");
+const PAYPAL_WEBHOOK_ID = Deno.env.get("PAYPAL_WEBHOOK_ID");
 
 // Get PayPal access token
-async function getAccessToken() {
-  const auth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
+async function getAccessToken(): Promise<string | null> {
+  const auth = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
 
   const response = await fetch(`${PAYPAL_API_URL}/v1/oauth2/token`, {
     method: "POST",
@@ -21,17 +26,24 @@ async function getAccessToken() {
   });
 
   const data = await response.json();
-  return data.access_token;
+  return data.access_token || null;
 }
 
 // Verify PayPal webhook signature
-async function verifyWebhookSignature(headers, body) {
+async function verifyWebhookSignature(
+  headers: Headers,
+  body: Record<string, unknown>
+): Promise<boolean> {
   if (!PAYPAL_WEBHOOK_ID) {
     console.warn("PAYPAL_WEBHOOK_ID not set, skipping verification");
     return true;
   }
 
   const accessToken = await getAccessToken();
+  if (!accessToken) {
+    console.error("Failed to get access token for webhook verification");
+    return false;
+  }
 
   const verifyResponse = await fetch(
     `${PAYPAL_API_URL}/v1/notifications/verify-webhook-signature`,
@@ -57,26 +69,22 @@ async function verifyWebhookSignature(headers, body) {
   return verifyData.verification_status === "SUCCESS";
 }
 
-// Supabase client
-function getSupabaseAdmin() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
-}
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
 
-export async function POST(request) {
   try {
-    const body = await request.json();
-    const headers = request.headers;
+    const body = await req.json();
+    const headers = req.headers;
 
     // Verify webhook signature (optional in sandbox)
     const isValid = await verifyWebhookSignature(headers, body);
     if (!isValid) {
       console.error("Invalid PayPal webhook signature");
-      return NextResponse.json(
-        { error: "Invalid signature" },
-        { status: 401 }
+      return new Response(
+        JSON.stringify({ error: "Invalid signature" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -85,14 +93,17 @@ export async function POST(request) {
 
     console.log("Received PayPal webhook:", eventType);
 
-    const supabase = getSupabaseAdmin();
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
 
     switch (eventType) {
       // Payment completed
       case "PAYMENT.CAPTURE.COMPLETED": {
         console.log("Payment capture completed:", resource.id);
 
-        let customData = {};
+        let customData: Record<string, string | null> = {};
         try {
           customData = JSON.parse(resource.custom_id || "{}");
         } catch {
@@ -129,13 +140,7 @@ export async function POST(request) {
       case "PAYMENT.CAPTURE.REFUNDED": {
         console.log("Payment refunded:", resource.id);
 
-        // Find booking by looking at recent confirmed bookings
-        // PayPal refunds contain the original capture ID
-        const captureId = resource.links?.find(
-          (l) => l.rel === "up"
-        )?.href?.split("/").pop();
-
-        let customData = {};
+        let customData: Record<string, string | null> = {};
         try {
           customData = JSON.parse(resource.custom_id || "{}");
         } catch {
@@ -182,7 +187,7 @@ export async function POST(request) {
       case "PAYMENT.CAPTURE.DENIED": {
         console.log("Payment denied:", resource.id);
 
-        let customData = {};
+        let customData: Record<string, string | null> = {};
         try {
           customData = JSON.parse(resource.custom_id || "{}");
         } catch {
@@ -231,12 +236,15 @@ export async function POST(request) {
         console.log("Unhandled PayPal event:", eventType);
     }
 
-    return NextResponse.json({ received: true });
+    return new Response(
+      JSON.stringify({ received: true }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   } catch (error) {
     console.error("PayPal webhook error:", error);
-    return NextResponse.json(
-      { error: error.message || "Webhook handler failed" },
-      { status: 500 }
+    return new Response(
+      JSON.stringify({ error: error?.message || "Webhook handler failed" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
-}
+});
