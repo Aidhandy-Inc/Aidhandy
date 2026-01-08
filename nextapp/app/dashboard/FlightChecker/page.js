@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
 import { useEffect, useState } from "react";
 import { supabase } from "@/libs/supabaseClient";
 import PathSelector from "@/components/Flight/PathSelector";
