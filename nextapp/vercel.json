@@ -4,9 +4,6 @@
   "installCommand": "npm ci",
   "framework": "nextjs",
   "regions": ["iad1"],
-  "env": {
-    "NODE_OPTIONS": "--max-old-space-size=4096"
-  },
   "functions": {
     "app/**/*.{js,ts,jsx,tsx}": {
       "maxDuration": 30

@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
 import CompanionSignUpPage from "@/components/Profile/companion-signup/CompanionSignUpPage";
 import ErrorState from "@/components/Profile/ErrorState";
 import LoadingState from "@/components/Profile/LoadingState";
@@ -64,6 +62,17 @@ export default function DashboardClient({ user, profile }) {
     }
   }, [profile, user, router, searchParams]);
 
+  // Handle phone verification redirect
+  useEffect(() => {
+    if (
+      profile?.status === "active" &&
+      profile?.is_phone_verified === false &&
+      user
+    ) {
+      router.push("/dashboard/profile");
+    }
+  }, [profile, user, router]);
+
   // ✅ Keep your loader and error flow
   if (isLoading) return <LoadingState />;
   return (
@@ -73,9 +82,6 @@ export default function DashboardClient({ user, profile }) {
           {profile === null && user === null && (
             <MainCard profile={profile} user={user} />
           )}
-          {profile?.status === "active" &&
-            profile?.is_phone_verified === false &&
-            router.push("/dashboard/profile")}
 
           {profile?.status === "active" && profile?.type === "traveller" ? (
             <>
@@ -87,7 +93,7 @@ export default function DashboardClient({ user, profile }) {
             <CompanionSignUpPage
               profile={profile}
               email={profile?.email}
-              userId={user.id}
+              userId={user?.id}
               onComplete={(data) => {
                 setCompanionProfile(data);
                 setProfileComplete(true);
