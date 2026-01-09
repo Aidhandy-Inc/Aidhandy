@@ -31,8 +31,20 @@ function LoginContent() {
     process.env.NEXT_PUBLIC_URL ||
     (typeof window !== "undefined" ? window.location.origin : "");
 
-  /* -------------------- EFFECT: SESSION CHECK -------------------- */
+  /* -------------------- EFFECT: AUTH + SESSION -------------------- */
   useEffect(() => {
+    // Handle Supabase auth errors (expired / invalid links)
+    const error =
+      searchParams.get("error") ||
+      searchParams.get("error_description");
+
+    if (error) {
+      setMessage("Your magic link has expired. Please request a new one.");
+      router.replace("/auth/login");
+      setCheckingSession(false);
+      return;
+    }
+
     const roleFromParams = searchParams.get("role");
     const typeFromParams = searchParams.get("type");
 
@@ -45,7 +57,8 @@ function LoginContent() {
       } = await supabase.auth.getSession();
 
       if (session?.user) {
-        router.push("/dashboard");
+        router.replace("/dashboard");
+        return;
       }
 
       setCheckingSession(false);
@@ -57,7 +70,7 @@ function LoginContent() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        router.push("/dashboard");
+        router.replace("/dashboard");
       }
     });
 
@@ -81,8 +94,8 @@ function LoginContent() {
     const { firstName, lastName, email } = travellerFields;
 
     if (!firstName || !lastName || !email) {
-      setLoading(false);
       setMessage("Please fill in all fields.");
+      setLoading(false);
       return;
     }
 
@@ -133,7 +146,7 @@ function LoginContent() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d9fd8] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d9fd8] mx-auto" />
           <p className="mt-4 text-gray-600">Checking authentication...</p>
         </div>
       </div>
@@ -142,6 +155,7 @@ function LoginContent() {
 
   const headingText =
     type === "signup" ? "Create Your Account" : "Welcome Back";
+
   const subText =
     type === "signup"
       ? "Sign up to get started with your journey"
@@ -171,7 +185,11 @@ function LoginContent() {
               onChange={handleTravellerChange("email")}
             />
 
-            {message && <p className="text-center mt-2">{message}</p>}
+            {message && (
+              <p className="text-center mt-3 text-sm text-gray-700">
+                {message}
+              </p>
+            )}
 
             <Button
               onClick={handleTravellerSignup}
